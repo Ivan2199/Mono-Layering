@@ -1,0 +1,6 @@
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Common\bin\Debug\WebProject.Common.dll
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Common\bin\Debug\WebProject.Common.pdb
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Common\obj\Debug\WebProject.Common.csproj.AssemblyReference.cache
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Common\obj\Debug\WebProject.Common.csproj.CoreCompileInputs.cache
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Common\obj\Debug\WebProject.Common.dll
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Common\obj\Debug\WebProject.Common.pdb

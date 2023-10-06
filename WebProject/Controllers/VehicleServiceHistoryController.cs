@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using WebProject.Data;
-using WebProject.Models;
+using WebProject.Model;
 
 namespace WebProject.Controllers
 {
@@ -31,7 +31,7 @@ namespace WebProject.Controllers
         }
 
         // GET api/VehicleServiceHistory/5
-        public HttpResponseMessage Get(Guid id)
+        public HttpResponseMessage Get(int id)
         {
             try
             {
@@ -68,7 +68,7 @@ namespace WebProject.Controllers
         }
 
         // PUT api/VehicleServiceHistory/5
-        public HttpResponseMessage Put(Guid id, [FromBody] VehicleServiceHistory vehicleServiceHistory)
+        public HttpResponseMessage Put(int id, [FromBody] VehicleServiceHistory vehicleServiceHistory)
         {
             try
             {
@@ -90,7 +90,7 @@ namespace WebProject.Controllers
         }
 
         // DELETE api/VehicleServiceHistory/5
-        public HttpResponseMessage Delete(Guid id)
+        public HttpResponseMessage Delete(int id)
         {
             try
             {

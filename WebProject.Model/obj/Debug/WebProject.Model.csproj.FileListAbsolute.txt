@@ -1,0 +1,9 @@
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Model\bin\Debug\WebProject.Model.dll
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Model\bin\Debug\WebProject.Model.pdb
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Model\bin\Debug\WebProject.Model.ModelCommon.dll
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Model\bin\Debug\WebProject.Model.ModelCommon.pdb
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Model\obj\Debug\WebProject.Model.csproj.AssemblyReference.cache
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Model\obj\Debug\WebProject.Model.csproj.CoreCompileInputs.cache
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Model\obj\Debug\WebProject.Model.csproj.CopyComplete
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Model\obj\Debug\WebProject.Model.dll
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Model\obj\Debug\WebProject.Model.pdb

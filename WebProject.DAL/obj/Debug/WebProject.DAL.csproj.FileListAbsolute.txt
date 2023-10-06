@@ -1,0 +1,6 @@
+C:\Users\ivana\Desktop\New folder (2)\WebProject.DAL\bin\Debug\WebProject.DAL.dll
+C:\Users\ivana\Desktop\New folder (2)\WebProject.DAL\bin\Debug\WebProject.DAL.pdb
+C:\Users\ivana\Desktop\New folder (2)\WebProject.DAL\obj\Debug\WebProject.DAL.csproj.AssemblyReference.cache
+C:\Users\ivana\Desktop\New folder (2)\WebProject.DAL\obj\Debug\WebProject.DAL.csproj.CoreCompileInputs.cache
+C:\Users\ivana\Desktop\New folder (2)\WebProject.DAL\obj\Debug\WebProject.DAL.dll
+C:\Users\ivana\Desktop\New folder (2)\WebProject.DAL\obj\Debug\WebProject.DAL.pdb

@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using WebProject.Data;
-using WebProject.Models;
+using WebProject.Model;
 using Npgsql;
 
 namespace WebProject.Controllers
@@ -40,7 +40,7 @@ namespace WebProject.Controllers
         }
 
         [HttpGet]
-        public HttpResponseMessage Get(Guid id)
+        public HttpResponseMessage Get(int id)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace WebProject.Controllers
         }
 
         [HttpPut]
-        public HttpResponseMessage Put(Guid id, [FromBody] Vehicle updatedVehicle)
+        public HttpResponseMessage Put(int id, [FromBody] Vehicle updatedVehicle)
         {
             try
             {
@@ -102,7 +102,7 @@ namespace WebProject.Controllers
         }
 
         [HttpDelete]
-        public HttpResponseMessage Delete(Guid id)
+        public HttpResponseMessage Delete(int id)
         {
             try
             {
