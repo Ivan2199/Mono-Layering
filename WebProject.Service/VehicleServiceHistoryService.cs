@@ -18,11 +18,11 @@ namespace WebProject.Service
             _dataAccessVehicleServiceHistory.InitializeDatabase();
         }
 
-        public List<VehicleServiceHistory> GetVehicleHistoryServices()
+        public async Task<List<VehicleServiceHistory>> GetVehicleHistoryServices()
         {
             try
             {
-                return _dataAccessVehicleServiceHistory.GetVehicleHistoryServices();
+                return await _dataAccessVehicleServiceHistory.GetVehicleHistoryServices();
             }
             catch (Exception ex)
             {
@@ -30,22 +30,22 @@ namespace WebProject.Service
             }
         }
 
-        public List<VehicleServiceHistory> GetVehicleServiceHistoryById(int id)
+        public async Task<List<VehicleServiceHistory>> GetVehicleServiceHistoryById(Guid id)
         {
-            return _dataAccessVehicleServiceHistory.GetVehicleServiceHistoryById(id);
+            return await _dataAccessVehicleServiceHistory.GetVehicleServiceHistoryById(id);
         }
 
-        public void AddVehicleServiceHistory(VehicleServiceHistory vehicleServiceHistory)
+        public async Task AddVehicleServiceHistory(VehicleServiceHistory vehicleServiceHistory)
         {
-            _dataAccessVehicleServiceHistory.AddVehicleServiceHistory(vehicleServiceHistory);
+            await _dataAccessVehicleServiceHistory.AddVehicleServiceHistory(vehicleServiceHistory);
         }
-        public void UpdateVehicleServiceHistory(int id, VehicleServiceHistory vehicleServiceHistory)
+        public async Task UpdateVehicleServiceHistory(Guid id, VehicleServiceHistory vehicleServiceHistory)
         {
-            _dataAccessVehicleServiceHistory.UpdateVehicleServiceHistory(id, vehicleServiceHistory);
+            await _dataAccessVehicleServiceHistory.UpdateVehicleServiceHistory(id, vehicleServiceHistory);
         }
-        public void DeleteVehicleServiceHistory(int id)
+        public async Task DeleteVehicleServiceHistory(Guid id)
         {
-            _dataAccessVehicleServiceHistory.DeleteVehicleServiceHistory(id);
+            await _dataAccessVehicleServiceHistory.DeleteVehicleServiceHistory(id);
         }
     }
 }

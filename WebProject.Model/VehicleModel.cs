@@ -7,7 +7,7 @@ namespace WebProject.Model
 {
     public class Vehicle
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string VehicleType { get; set; }
         public string VehicleBrand { get; set; }
         public int YearOfProduction { get; set; }

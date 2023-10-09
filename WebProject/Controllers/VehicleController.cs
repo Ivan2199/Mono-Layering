@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using WebProject.Service;
+using System.Threading.Tasks;
 using WebProject.Model;
 
 namespace WebProject.Controllers
@@ -17,11 +18,11 @@ namespace WebProject.Controllers
         }
 
         [HttpGet]
-        public HttpResponseMessage Get(string vehicleType = null)
+        public async Task<HttpResponseMessage> Get(string vehicleType = null)
         {
             try
             {
-                var vehicles = _vehicleService.GetVehicles(vehicleType);
+                var vehicles = await _vehicleService.GetVehicles(vehicleType);
 
                 if (vehicles.Count == 0)
                 {
@@ -37,11 +38,11 @@ namespace WebProject.Controllers
         }
 
         [HttpGet]
-        public HttpResponseMessage Get(int id)
+        public async Task<HttpResponseMessage> Get(Guid id)
         {
             try
             {
-                var vehicle = _vehicleService.GetVehicleById(id);
+                var vehicle = await _vehicleService.GetVehicleById(id);
 
                 if (vehicle == null)
                 {
@@ -57,7 +58,7 @@ namespace WebProject.Controllers
         }
 
         [HttpPost]
-        public HttpResponseMessage Post([FromBody] Vehicle vehicle)
+        public async Task<HttpResponseMessage> Post([FromBody] Vehicle vehicle)
         {
             try
             {
@@ -66,7 +67,7 @@ namespace WebProject.Controllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "No data has been entered");
                 }
 
-                _vehicleService.AddVehicle(vehicle);
+                await _vehicleService.AddVehicle(vehicle);
 
                 return Request.CreateResponse(HttpStatusCode.Created, "Data has been entered successfully");
             }
@@ -77,18 +78,18 @@ namespace WebProject.Controllers
         }
 
         [HttpPut]
-        public HttpResponseMessage Put(int id, [FromBody] Vehicle updatedVehicle)
+        public async Task<HttpResponseMessage> Put(Guid id, [FromBody] Vehicle updatedVehicle)
         {
             try
             {
-                var vehicleCurrent = _vehicleService.GetVehicleById(id);
+                var vehicleCurrent = await _vehicleService.GetVehicleById(id);
 
                 if (vehicleCurrent == null)
                 {
                     return Request.CreateResponse(HttpStatusCode.NotFound, "No vehicle with that id was found");
                 }
 
-                _vehicleService.UpdateVehicle(id, updatedVehicle);
+                await _vehicleService.UpdateVehicle(id, updatedVehicle);
 
                 return Request.CreateResponse(HttpStatusCode.OK, "Data has been updated successfully");
             }
@@ -99,18 +100,18 @@ namespace WebProject.Controllers
         }
 
         [HttpDelete]
-        public HttpResponseMessage Delete(int id)
+        public async Task<HttpResponseMessage> Delete(Guid id)
         {
             try
             {
-                var vehicle = _vehicleService.GetVehicleById(id);
+                var vehicle = await _vehicleService.GetVehicleById(id);
 
                 if (vehicle == null)
                 {
                     return Request.CreateResponse(HttpStatusCode.NotFound, "No vehicle with that id was found");
                 }
 
-                _vehicleService.DeleteVehicle(id);
+                await _vehicleService.DeleteVehicle(id);
 
                 return Request.CreateResponse(HttpStatusCode.OK, "Vehicle has been deleted successfully");
             }

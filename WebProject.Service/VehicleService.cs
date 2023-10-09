@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using WebProject.Data;
 using WebProject.Model;
+using System.Threading.Tasks;
 using WebProject.Service.ServiceCommon;
 
 namespace WebProject.Service
@@ -16,11 +17,11 @@ namespace WebProject.Service
             _dataAccess.InitializeDatabase();
         }
 
-        public List<Vehicle> GetVehicles(string vehicleType = null)
+        public async Task<List<Vehicle>> GetVehicles(string vehicleType = null)
         {
             try
             {
-                return _dataAccess.GetVehicles(vehicleType);
+                return await _dataAccess.GetVehicles(vehicleType);
             }
             catch (Exception ex)
             {
@@ -29,11 +30,11 @@ namespace WebProject.Service
             }
         }
 
-        public Vehicle GetVehicleById(int id)
+        public async Task<Vehicle> GetVehicleById(Guid id)
         {
             try
             {
-                return _dataAccess.GetVehicleById(id);
+                return await _dataAccess.GetVehicleById(id);
             }
             catch (Exception ex)
             {
@@ -42,11 +43,11 @@ namespace WebProject.Service
             }
         }
 
-        public void AddVehicle(Vehicle vehicle)
+        public async Task AddVehicle(Vehicle vehicle)
         {
             try
             {
-                _dataAccess.AddVehicle(vehicle);
+                await _dataAccess.AddVehicle(vehicle);
             }
             catch (Exception ex)
             {
@@ -55,11 +56,11 @@ namespace WebProject.Service
             }
         }
 
-        public void UpdateVehicle(int id, Vehicle updatedVehicle)
+        public async Task UpdateVehicle(Guid id, Vehicle updatedVehicle)
         {
             try
             {
-                _dataAccess.UpdateVehicle(id, updatedVehicle);
+                await _dataAccess.UpdateVehicle(id, updatedVehicle);
             }
             catch (Exception ex)
             {
@@ -68,11 +69,11 @@ namespace WebProject.Service
             }
         }
 
-        public void DeleteVehicle(int id)
+        public async Task DeleteVehicle(Guid id)
         {
             try
             {
-                _dataAccess.DeleteVehicle(id);
+                await _dataAccess.DeleteVehicle(id);
             }
             catch (Exception ex)
             {

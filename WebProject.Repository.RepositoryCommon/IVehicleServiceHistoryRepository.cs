@@ -9,11 +9,11 @@ namespace WebProject.Repository.RepositoryCommon
 {
     public interface IVehicleServiceHistoryRepository
     {
-        void InitializeDatabase();
-        List<VehicleServiceHistory> GetVehicleHistoryServices();
-        List<VehicleServiceHistory> GetVehicleServiceHistoryById(int id);
-        void AddVehicleServiceHistory(VehicleServiceHistory vehicleServiceHistory);
-        void UpdateVehicleServiceHistory(int id, VehicleServiceHistory vehicleServiceHistory);
-        void DeleteVehicleServiceHistory(int id);
+        Task InitializeDatabase();
+        Task<List<VehicleServiceHistory>> GetVehicleHistoryServices();
+        Task<List<VehicleServiceHistory>> GetVehicleServiceHistoryById(Guid id);
+        Task AddVehicleServiceHistory(VehicleServiceHistory vehicleServiceHistory);
+        Task UpdateVehicleServiceHistory(Guid id, VehicleServiceHistory vehicleServiceHistory);
+        Task DeleteVehicleServiceHistory(Guid id);
     }
 }

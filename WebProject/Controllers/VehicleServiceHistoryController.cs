@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Threading.Tasks;
 using WebProject.Service;
 using WebProject.Model;
 
@@ -17,9 +18,9 @@ namespace WebProject.Controllers
         }
 
         // GET api/VehicleServiceHistory
-        public HttpResponseMessage Get()
+        public async Task<HttpResponseMessage> Get()
         {
-            var vehicleServiceHistories = _dataAccessVehicleServiceHistory.GetVehicleHistoryServices();
+            var vehicleServiceHistories = await _dataAccessVehicleServiceHistory.GetVehicleHistoryServices();
 
             if (vehicleServiceHistories.Count == 0)
             {
@@ -30,11 +31,11 @@ namespace WebProject.Controllers
         }
 
         // GET api/VehicleServiceHistory/5
-        public HttpResponseMessage Get(int id)
+        public async Task<HttpResponseMessage> Get(Guid id)
         {
             try
             {
-                var vehicleServiceHistory = _dataAccessVehicleServiceHistory.GetVehicleServiceHistoryById(id);
+                var vehicleServiceHistory = await _dataAccessVehicleServiceHistory.GetVehicleServiceHistoryById(id);
 
                 if (vehicleServiceHistory == null)
                 {
@@ -50,11 +51,11 @@ namespace WebProject.Controllers
         }
 
         // POST api/VehicleServiceHistory
-        public HttpResponseMessage Post([FromBody] VehicleServiceHistory vehicleServiceHistory)
+        public async Task<HttpResponseMessage> Post([FromBody] VehicleServiceHistory vehicleServiceHistory)
         {
             try
             {
-                _dataAccessVehicleServiceHistory.AddVehicleServiceHistory(vehicleServiceHistory);
+                await _dataAccessVehicleServiceHistory.AddVehicleServiceHistory(vehicleServiceHistory);
 
                 var response = Request.CreateResponse(HttpStatusCode.Created, vehicleServiceHistory);
                 response.Headers.Location = new Uri(Request.RequestUri, $"/api/VehicleServiceHistory/{vehicleServiceHistory.Id}");
@@ -67,18 +68,18 @@ namespace WebProject.Controllers
         }
 
         // PUT api/VehicleServiceHistory/5
-        public HttpResponseMessage Put(int id, [FromBody] VehicleServiceHistory vehicleServiceHistory)
+        public async Task<HttpResponseMessage> Put(Guid id, [FromBody] VehicleServiceHistory vehicleServiceHistory)
         {
             try
             {
-                var existingVehicleServiceHistory = _dataAccessVehicleServiceHistory.GetVehicleServiceHistoryById(id);
+                var existingVehicleServiceHistory = await _dataAccessVehicleServiceHistory.GetVehicleServiceHistoryById(id);
 
                 if (existingVehicleServiceHistory == null)
                 {
                     return Request.CreateResponse(HttpStatusCode.NotFound, "Vehicle Service History not found");
                 }
 
-                _dataAccessVehicleServiceHistory.UpdateVehicleServiceHistory(id, vehicleServiceHistory);
+                await _dataAccessVehicleServiceHistory.UpdateVehicleServiceHistory(id, vehicleServiceHistory);
 
                 return Request.CreateResponse(HttpStatusCode.OK, vehicleServiceHistory);
             }
@@ -89,18 +90,18 @@ namespace WebProject.Controllers
         }
 
         // DELETE api/VehicleServiceHistory/5
-        public HttpResponseMessage Delete(int id)
+        public async Task<HttpResponseMessage> Delete(Guid id)
         {
             try
             {
-                var vehicleServiceHistory = _dataAccessVehicleServiceHistory.GetVehicleServiceHistoryById(id);
+                var vehicleServiceHistory = await _dataAccessVehicleServiceHistory.GetVehicleServiceHistoryById(id);
 
                 if (vehicleServiceHistory == null)
                 {
                     return Request.CreateResponse(HttpStatusCode.NotFound, "Vehicle Service History not found");
                 }
 
-                _dataAccessVehicleServiceHistory.DeleteVehicleServiceHistory(id);
+                await _dataAccessVehicleServiceHistory.DeleteVehicleServiceHistory(id);
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }

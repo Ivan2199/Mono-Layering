@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using Npgsql;
 using WebProject.Model;
+using System.Threading.Tasks;
 using WebProject.Repository.RepositoryCommon;
 
 namespace WebProject.Data
@@ -12,7 +13,7 @@ namespace WebProject.Data
         private readonly string _connectionString = ConfigurationManager.ConnectionStrings["ABCD"].ToString();
 
         public DataAccessVehicleServiceHistory() { }
-        public void InitializeDatabase()
+        public async Task InitializeDatabase()
         {
             using (var con = new NpgsqlConnection(_connectionString))
             {
@@ -23,24 +24,24 @@ namespace WebProject.Data
                     cmd.Connection = con;
 
                     cmd.CommandText = "CREATE TABLE IF NOT EXISTS \"VehicleServiceHistory\" (" +
-                        "\"Id\" SERIAL PRIMARY KEY," +
-                        "\"VehicleId\" INT," +
+                        "\"Id\" UUID PRIMARY KEY," +
+                        "\"VehicleId\" UUID," +
                         "\"ServiceDate\" DATE," +
                         "\"ServiceDescription\" VARCHAR(255)," +
                         "\"ServiceCost\" DECIMAL," +
                         "FOREIGN KEY (\"VehicleId\") REFERENCES \"Vehicle\"(\"Id\"))";
-                    cmd.ExecuteNonQuery();
+                   await cmd.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        public List<VehicleServiceHistory> GetVehicleHistoryServices()
+        public async Task<List<VehicleServiceHistory>> GetVehicleHistoryServices()
         {
             List<VehicleServiceHistory> vehicleServiceHistories = new List<VehicleServiceHistory>();
 
             using (var con = new NpgsqlConnection(_connectionString))
             {
-                con.Open();
+                await con.OpenAsync();
 
                 using (var cmd = new NpgsqlCommand())
                 {
@@ -48,7 +49,7 @@ namespace WebProject.Data
 
                     cmd.CommandText = "SELECT * FROM \"VehicleServiceHistory\"";
 
-                    using (var reader = cmd.ExecuteReader())
+                    using (var reader = await cmd.ExecuteReaderAsync())
                     {
                        vehicleServiceHistories = MapVehicleServiceHistoryFromReader(reader); 
                     }
@@ -58,12 +59,12 @@ namespace WebProject.Data
             return vehicleServiceHistories;
         }
 
-        public List<VehicleServiceHistory> GetVehicleServiceHistoryById(int id)
+        public async Task<List<VehicleServiceHistory>> GetVehicleServiceHistoryById(Guid id)
         {
             List<VehicleServiceHistory> vehicleServiceHistories = new List<VehicleServiceHistory>();
             using (var con = new NpgsqlConnection(_connectionString))
             {
-                con.Open();
+                await con.OpenAsync();
 
                 using (var cmd = new NpgsqlCommand())
                 {
@@ -72,7 +73,7 @@ namespace WebProject.Data
                     cmd.CommandText = "SELECT * FROM \"VehicleServiceHistory\" WHERE \"Id\" = @id";
                     cmd.Parameters.AddWithValue("@id", id);
 
-                    using (var reader = cmd.ExecuteReader())
+                    using (var reader = await cmd.ExecuteReaderAsync())
                     {
                         vehicleServiceHistories = MapVehicleServiceHistoryFromReader(reader);
                     }
@@ -82,30 +83,33 @@ namespace WebProject.Data
             return vehicleServiceHistories;
         }
 
-        public void AddVehicleServiceHistory(VehicleServiceHistory vehicleServiceHistory)
+        public async Task AddVehicleServiceHistory(VehicleServiceHistory vehicleServiceHistory)
         {
             using (var con = new NpgsqlConnection(_connectionString))
             {
-                con.Open();
+                await con.OpenAsync();
 
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = con;
 
-                    cmd.CommandText = "INSERT INTO \"VehicleServiceHistory\" (\"VehicleId\", \"ServiceDate\", \"ServiceDescription\", \"ServiceCost\")" +
-                                      "VALUES (@vehicleId, @serviceDate, @serviceDescription, @serviceCost)";
+                    cmd.CommandText = "INSERT INTO \"VehicleServiceHistory\" (\"Id\", \"VehicleId\", \"ServiceDate\", \"ServiceDescription\", \"ServiceCost\")" +
+                                      "VALUES (@id, @vehicleId, @serviceDate, @serviceDescription, @serviceCost)";
+
+                    Guid randId = System.Guid.NewGuid();
+                    cmd.Parameters.AddWithValue("@id", randId);
                     AddVehicleServiceHistoryParameters(cmd, vehicleServiceHistory);
 
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        public void UpdateVehicleServiceHistory(int id, VehicleServiceHistory vehicleServiceHistory)
+        public async Task UpdateVehicleServiceHistory(Guid id, VehicleServiceHistory vehicleServiceHistory)
         {
             using (var con = new NpgsqlConnection(_connectionString))
             {
-                con.Open();
+                await con.OpenAsync();
 
                 using (var cmd = new NpgsqlCommand())
                 {
@@ -115,18 +119,19 @@ namespace WebProject.Data
                     cmd.CommandText = "UPDATE \"VehicleServiceHistory\" SET \"ServiceDate\" = @serviceDate, " +
                                       "\"ServiceDescription\" = @serviceDescription, \"ServiceCost\" = @serviceCost " +
                                       "WHERE \"Id\" = @id";
+                    cmd.Parameters.AddWithValue("@id", id);
                     AddVehicleServiceHistoryParameters(cmd, vehicleServiceHistory);
 
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        public void DeleteVehicleServiceHistory(int id)
+        public async Task DeleteVehicleServiceHistory(Guid id)
         {
             using (var con = new NpgsqlConnection(_connectionString))
             {
-                con.Open();
+                await con.OpenAsync();
 
                 using (var cmd = new NpgsqlCommand())
                 {
@@ -135,7 +140,7 @@ namespace WebProject.Data
                     cmd.CommandText = "DELETE FROM \"VehicleServiceHistory\" WHERE \"Id\" = @id";
                     cmd.Parameters.AddWithValue("@Id", id);
 
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
         }
@@ -153,8 +158,8 @@ namespace WebProject.Data
             {
                 var vehicleServiceHistory = new VehicleServiceHistory
                 {
-                    Id = Convert.ToInt32(reader["Id"]),
-                    VehicleId = Convert.ToInt32(reader["VehicleId"]),
+                    Id = (Guid)reader["Id"],
+                    VehicleId = (Guid)reader["VehicleId"],
                     ServiceDate = Convert.ToDateTime(reader["ServiceDate"]).Date,
                     ServiceDescription = Convert.ToString(reader["ServiceDescription"]),
                     ServiceCost = Convert.ToDecimal(reader["ServiceCost"]),

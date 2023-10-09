@@ -11,14 +11,14 @@ namespace WebProject.Service.ServiceCommon
 {
     public interface IVehicleService
     {
-        List<Vehicle> GetVehicles(string vehicleType = null);
+        Task<List<Vehicle>> GetVehicles(string vehicleType = null);
 
-        Vehicle GetVehicleById(int id);
+        Task<Vehicle> GetVehicleById(Guid id);
 
-        void AddVehicle(Vehicle vehicle);
+        Task AddVehicle(Vehicle vehicle);
 
-        void UpdateVehicle(int id, Vehicle updatedVehicle);
+        Task UpdateVehicle(Guid id, Vehicle updatedVehicle);
 
-        void DeleteVehicle(int id);
+        Task DeleteVehicle(Guid id);
     }
 }

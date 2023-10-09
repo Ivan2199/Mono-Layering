@@ -10,10 +10,10 @@ namespace WebProject.Service.ServiceCommon
 {
     public interface IVehicleServiceHistoryService
     {
-        List<VehicleServiceHistory> GetVehicleHistoryServices();
-        List<VehicleServiceHistory> GetVehicleServiceHistoryById(int id);
-        void AddVehicleServiceHistory(VehicleServiceHistory vehicleServiceHistory);
-        void UpdateVehicleServiceHistory(int id, VehicleServiceHistory vehicleServiceHistory);
-        void DeleteVehicleServiceHistory(int id);
+        Task<List<VehicleServiceHistory>> GetVehicleHistoryServices();
+        Task<List<VehicleServiceHistory>> GetVehicleServiceHistoryById(Guid id);
+        Task AddVehicleServiceHistory(VehicleServiceHistory vehicleServiceHistory);
+        Task UpdateVehicleServiceHistory(Guid id, VehicleServiceHistory vehicleServiceHistory);
+        Task DeleteVehicleServiceHistory(Guid id);
     }
 }

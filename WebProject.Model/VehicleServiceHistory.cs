@@ -9,8 +9,8 @@ namespace WebProject.Model
 {
     public class VehicleServiceHistory
     {
-        public int Id { get; set; }
-        public int VehicleId { get; set; }
+        public Guid Id { get; set; }
+        public Guid VehicleId { get; set; }
         public DateTime ServiceDate { get; set; }
         public string ServiceDescription { get; set; }
         public decimal ServiceCost { get; set; }

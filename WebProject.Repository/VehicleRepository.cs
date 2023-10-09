@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 using Npgsql;
 using WebProject.Model;
 using WebProject.Repository.RepositoryCommon;
@@ -19,30 +22,29 @@ namespace WebProject.Data
             InitializeDatabase();
         }
 
-        public void CloseConnection()
+        public async Task InitializeDatabase()
         {
-            _connection.Close();
-        }
-
-        public void InitializeDatabase()
-        {
+            if (_connection.State != ConnectionState.Open)
+            {
+                _connection.Open();
+            }
             using (var cmd = new NpgsqlCommand())
             {
                 cmd.Connection = _connection;
 
                 cmd.CommandText = "CREATE TABLE IF NOT EXISTS \"Vehicle\" (" +
-                    "\"Id\" SERIAL PRIMARY KEY," +
+                    "\"Id\" UUID PRIMARY KEY," +
                     "\"VehicleType\" VARCHAR(255)," +
                     "\"VehicleBrand\" VARCHAR(255)," +
                     "\"YearOfProduction\" INT," +
                     "\"TopSpeed\" INT," +
                     "\"VehicleMileage\" INT," +
                     "\"VehicleOwner\" VARCHAR(255))";
-                cmd.ExecuteNonQuery();
+                await cmd.ExecuteNonQueryAsync();
             }
         }
 
-        public List<Vehicle> GetVehicles(string vehicleType = null)
+        public async Task<List<Vehicle>> GetVehicles(string vehicleType = null)
         {
             var vehicles = new List<Vehicle>();
             Vehicle currentVehicle = null;
@@ -65,11 +67,11 @@ namespace WebProject.Data
                 }
 
 
-                using (var reader = cmd.ExecuteReader())
+                using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
-                        int currentVehicleId = reader["Id"] != DBNull.Value ? Convert.ToInt32(reader["Id"]) : 0;
+                        Guid currentVehicleId = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty;
 
                         if (currentVehicle == null || currentVehicle.Id != currentVehicleId)
                         {
@@ -101,7 +103,7 @@ namespace WebProject.Data
             return vehicles;
         }
 
-        public Vehicle GetVehicleById(int id)
+        public async Task<Vehicle> GetVehicleById(Guid id)
         {
             Vehicle vehicle = null;
             List<VehicleServiceHistory> serviceHistories = new List<VehicleServiceHistory>();
@@ -112,13 +114,24 @@ namespace WebProject.Data
 
                 cmd.CommandText = $"SELECT v.*, h.* FROM \"Vehicle\" v " +
                                   $"LEFT JOIN \"VehicleServiceHistory\" h ON v.\"Id\" = h.\"VehicleId\" " +
-                                  $"WHERE v.\"Id\" = @id " +
-                                  $"ORDER BY v.\"Id\", h.\"Id\"";
+                                  $"WHERE v.\"Id\" = @id";
                 cmd.Parameters.AddWithValue("@id", id);
 
-                using (var reader = cmd.ExecuteReader())
+                using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                    ProcessReaderData(reader, ref vehicle, ref serviceHistories);
+                    while (await reader.ReadAsync())
+                    {
+                        if (vehicle == null)
+                        {
+                            vehicle = MapVehicleFromReader(reader);
+                        }
+
+                        if (!reader.IsDBNull(reader.GetOrdinal("ServiceDate")))
+                        {
+                            var serviceHistory = MapVehicleServiceHistoryFromReader(reader);
+                            serviceHistories.Add(serviceHistory);
+                        }
+                    }
                 }
             }
 
@@ -130,53 +143,24 @@ namespace WebProject.Data
             return vehicle;
         }
 
-        private void ProcessReaderData(NpgsqlDataReader reader, ref Vehicle currentVehicle, ref List<VehicleServiceHistory> currentServiceHistories)
-        {
-            while (reader.Read())
-            {
-                int currentVehicleId = reader.GetInt32(reader.GetOrdinal("Id"));
-
-                if (currentVehicle == null || currentVehicle.Id != currentVehicleId)
-                {
-                    if (currentVehicle != null)
-                    {
-                        currentVehicle.VehicleServiceHistory = currentServiceHistories;
-                    }
-
-                    currentVehicle = MapVehicleFromReader(reader);
-                    currentServiceHistories = new List<VehicleServiceHistory>();
-                }
-
-                if (!reader.IsDBNull(reader.GetOrdinal("ServiceDate")))
-                {
-                    var serviceHistory = MapVehicleServiceHistoryFromReader(reader);
-                    currentServiceHistories.Add(serviceHistory);
-                }
-            }
-
-            if (currentVehicle != null)
-            {
-                currentVehicle.VehicleServiceHistory = currentServiceHistories;
-            }
-        }
-
-
-
-        public void AddVehicle(Vehicle vehicle)
+        public async Task AddVehicle(Vehicle vehicle)
         {
             using (var cmd = new NpgsqlCommand())
             {
                 cmd.Connection = _connection;
 
-                cmd.CommandText = "INSERT INTO \"Vehicle\" (\"VehicleType\", \"VehicleBrand\", \"YearOfProduction\", \"TopSpeed\", \"VehicleMileage\", \"VehicleOwner\")" +
-                                  "VALUES (@type, @brand, @year, @speed, @mileage, @owner)";
+                cmd.CommandText = "INSERT INTO \"Vehicle\" (\"Id\", \"VehicleType\", \"VehicleBrand\", \"YearOfProduction\", \"TopSpeed\", \"VehicleMileage\", \"VehicleOwner\")" +
+                                  "VALUES (@id, @type, @brand, @year, @speed, @mileage, @owner)";
+
+                Guid randid = System.Guid.NewGuid();
+                cmd.Parameters.AddWithValue("@id", randid);
                 AddVehicleParameters(cmd, vehicle);
 
-                cmd.ExecuteNonQuery();
+                await cmd.ExecuteNonQueryAsync();
             }
         }
 
-        public void UpdateVehicle(int id, Vehicle updatedVehicle)
+        public async Task UpdateVehicle(Guid id, Vehicle updatedVehicle)
         {
             using (var cmd = new NpgsqlCommand())
             {
@@ -188,11 +172,11 @@ namespace WebProject.Data
                 cmd.Parameters.AddWithValue("@id", id);
                 AddVehicleParameters(cmd, updatedVehicle);
 
-                cmd.ExecuteNonQuery();
+               await cmd.ExecuteNonQueryAsync();
             }
         }
 
-        public void DeleteVehicle(int id)
+        public async Task DeleteVehicle(Guid id)
         {
             using (var cmd = new NpgsqlCommand())
             {
@@ -201,7 +185,7 @@ namespace WebProject.Data
                 cmd.CommandText = "DELETE FROM \"Vehicle\" WHERE \"Id\" = @id";
                 cmd.Parameters.AddWithValue("@id", id);
 
-                cmd.ExecuteNonQuery();
+                await cmd.ExecuteNonQueryAsync();
             }
         }
 
@@ -221,7 +205,7 @@ namespace WebProject.Data
         {
             var vehicle = new Vehicle()
             {
-                Id = reader["Id"] != DBNull.Value ? Convert.ToInt32(reader["Id"]) : 0,
+                Id = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty,
                 VehicleType = Convert.ToString(reader["VehicleType"]),
                 VehicleBrand = Convert.ToString(reader["VehicleBrand"]),
                 YearOfProduction = Convert.ToInt32(reader["YearOfProduction"]),
@@ -232,7 +216,7 @@ namespace WebProject.Data
                 {
                   new VehicleServiceHistory()
                   {
-                      Id = Convert.ToInt32(reader[8])
+                      Id = (Guid)reader[8]
                   }
                 } : null,
             };
@@ -244,8 +228,8 @@ namespace WebProject.Data
         {
             return new VehicleServiceHistory
             {
-                Id = Convert.ToInt32(reader[7]),
-                VehicleId = Convert.ToInt32(reader["VehicleId"]),
+                Id = (Guid)reader[7],
+                VehicleId = (Guid)reader["VehicleId"],
                 ServiceDate = Convert.ToDateTime(reader["ServiceDate"]).Date,
                 ServiceDescription = Convert.ToString(reader["ServiceDescription"]),
                 ServiceCost = Convert.ToDecimal(reader["ServiceCost"]),
