@@ -2,19 +2,18 @@
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using WebProject.Data;
+using WebProject.Service;
 using WebProject.Model;
 
 namespace WebProject.Controllers
 {
     public class VehicleServiceHistoryController : ApiController
     {
-        private readonly DataAccessVehicleServiceHistory _dataAccessVehicleServiceHistory;
+        private readonly VehicleServiceHistoryService _dataAccessVehicleServiceHistory;
 
         public VehicleServiceHistoryController()
         {
-            _dataAccessVehicleServiceHistory = new DataAccessVehicleServiceHistory();
-            _dataAccessVehicleServiceHistory.InitializeDatabase();
+            _dataAccessVehicleServiceHistory = new VehicleServiceHistoryService();
         }
 
         // GET api/VehicleServiceHistory
@@ -79,7 +78,7 @@ namespace WebProject.Controllers
                     return Request.CreateResponse(HttpStatusCode.NotFound, "Vehicle Service History not found");
                 }
 
-                _dataAccessVehicleServiceHistory.UpdateVehicleServiceHistory(vehicleServiceHistory);
+                _dataAccessVehicleServiceHistory.UpdateVehicleServiceHistory(id, vehicleServiceHistory);
 
                 return Request.CreateResponse(HttpStatusCode.OK, vehicleServiceHistory);
             }

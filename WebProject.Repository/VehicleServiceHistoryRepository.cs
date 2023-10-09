@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Configuration;
 using Npgsql;
 using WebProject.Model;
+using WebProject.Repository.RepositoryCommon;
 
 namespace WebProject.Data
 {
-    public class DataAccessVehicleServiceHistory
+    public class DataAccessVehicleServiceHistory : IVehicleServiceHistoryRepository
     {
         private readonly string _connectionString = ConfigurationManager.ConnectionStrings["ABCD"].ToString();
 
@@ -21,13 +22,13 @@ namespace WebProject.Data
                 {
                     cmd.Connection = con;
 
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS VehicleServiceHistory (" +
-                        "Id SERIAL PRIMARY KEY," +
-                        "VehicleId INT," +
-                        "ServiceDate DATE," +
-                        "ServiceDescription VARCHAR(255)," +
-                        "ServiceCost DECIMAL," +
-                        "FOREIGN KEY (vehicleid) REFERENCES vehicle(id))";
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS \"VehicleServiceHistory\" (" +
+                        "\"Id\" SERIAL PRIMARY KEY," +
+                        "\"VehicleId\" INT," +
+                        "\"ServiceDate\" DATE," +
+                        "\"ServiceDescription\" VARCHAR(255)," +
+                        "\"ServiceCost\" DECIMAL," +
+                        "FOREIGN KEY (\"VehicleId\") REFERENCES \"Vehicle\"(\"Id\"))";
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -45,7 +46,7 @@ namespace WebProject.Data
                 {
                     cmd.Connection = con;
 
-                    cmd.CommandText = "SELECT * FROM VehicleServiceHistory";
+                    cmd.CommandText = "SELECT * FROM \"VehicleServiceHistory\"";
 
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -68,7 +69,7 @@ namespace WebProject.Data
                 {
                     cmd.Connection = con;
 
-                    cmd.CommandText = "SELECT * FROM VehicleServiceHistory WHERE Id = @id";
+                    cmd.CommandText = "SELECT * FROM \"VehicleServiceHistory\" WHERE \"Id\" = @id";
                     cmd.Parameters.AddWithValue("@id", id);
 
                     using (var reader = cmd.ExecuteReader())
@@ -91,7 +92,7 @@ namespace WebProject.Data
                 {
                     cmd.Connection = con;
 
-                    cmd.CommandText = "INSERT INTO VehicleServiceHistory (VehicleId, ServiceDate, ServiceDescription, ServiceCost)" +
+                    cmd.CommandText = "INSERT INTO \"VehicleServiceHistory\" (\"VehicleId\", \"ServiceDate\", \"ServiceDescription\", \"ServiceCost\")" +
                                       "VALUES (@vehicleId, @serviceDate, @serviceDescription, @serviceCost)";
                     AddVehicleServiceHistoryParameters(cmd, vehicleServiceHistory);
 
@@ -100,7 +101,7 @@ namespace WebProject.Data
             }
         }
 
-        public void UpdateVehicleServiceHistory(VehicleServiceHistory vehicleServiceHistory)
+        public void UpdateVehicleServiceHistory(int id, VehicleServiceHistory vehicleServiceHistory)
         {
             using (var con = new NpgsqlConnection(_connectionString))
             {
@@ -110,9 +111,10 @@ namespace WebProject.Data
                 {
                     cmd.Connection = con;
 
-                    cmd.CommandText = "UPDATE VehicleServiceHistory SET ServiceDate = @serviceDate, " +
-                                      "ServiceDescription = @serviceDescription, ServiceCost = @serviceCost " +
-                                      "WHERE Id = @id";
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.CommandText = "UPDATE \"VehicleServiceHistory\" SET \"ServiceDate\" = @serviceDate, " +
+                                      "\"ServiceDescription\" = @serviceDescription, \"ServiceCost\" = @serviceCost " +
+                                      "WHERE \"Id\" = @id";
                     AddVehicleServiceHistoryParameters(cmd, vehicleServiceHistory);
 
                     cmd.ExecuteNonQuery();
@@ -130,7 +132,7 @@ namespace WebProject.Data
                 {
                     cmd.Connection = con;
 
-                    cmd.CommandText = "DELETE FROM VehicleServiceHistory WHERE Id = @Id";
+                    cmd.CommandText = "DELETE FROM \"VehicleServiceHistory\" WHERE \"Id\" = @id";
                     cmd.Parameters.AddWithValue("@Id", id);
 
                     cmd.ExecuteNonQuery();
@@ -163,6 +165,7 @@ namespace WebProject.Data
 
             return serviceHistoryList;
         }
+
 
 
         private void AddVehicleServiceHistoryParameters(NpgsqlCommand cmd, VehicleServiceHistory vehicleServiceHistory)

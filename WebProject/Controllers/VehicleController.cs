@@ -1,22 +1,19 @@
-﻿// VehicleController.cs
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using WebProject.Data;
+using WebProject.Service;
 using WebProject.Model;
-using Npgsql;
 
 namespace WebProject.Controllers
 {
     public class VehicleController : ApiController
     {
-        private readonly DataAccess _dataAccess;
+        private readonly VehicleService _vehicleService;
 
         public VehicleController()
         {
-            _dataAccess = new DataAccess();
-            _dataAccess.InitializeDatabase();
+            _vehicleService = new VehicleService();
         }
 
         [HttpGet]
@@ -24,7 +21,7 @@ namespace WebProject.Controllers
         {
             try
             {
-                var vehicles = _dataAccess.GetVehicles(vehicleType);
+                var vehicles = _vehicleService.GetVehicles(vehicleType);
 
                 if (vehicles.Count == 0)
                 {
@@ -44,7 +41,7 @@ namespace WebProject.Controllers
         {
             try
             {
-                var vehicle = _dataAccess.GetVehicleById(id);
+                var vehicle = _vehicleService.GetVehicleById(id);
 
                 if (vehicle == null)
                 {
@@ -69,7 +66,7 @@ namespace WebProject.Controllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "No data has been entered");
                 }
 
-                _dataAccess.AddVehicle(vehicle);
+                _vehicleService.AddVehicle(vehicle);
 
                 return Request.CreateResponse(HttpStatusCode.Created, "Data has been entered successfully");
             }
@@ -84,14 +81,14 @@ namespace WebProject.Controllers
         {
             try
             {
-                var vehicleCurrent = _dataAccess.GetVehicleById(id);
+                var vehicleCurrent = _vehicleService.GetVehicleById(id);
 
                 if (vehicleCurrent == null)
                 {
                     return Request.CreateResponse(HttpStatusCode.NotFound, "No vehicle with that id was found");
                 }
 
-                _dataAccess.UpdateVehicle(id, updatedVehicle);
+                _vehicleService.UpdateVehicle(id, updatedVehicle);
 
                 return Request.CreateResponse(HttpStatusCode.OK, "Data has been updated successfully");
             }
@@ -106,14 +103,14 @@ namespace WebProject.Controllers
         {
             try
             {
-                var vehicle = _dataAccess.GetVehicleById(id);
+                var vehicle = _vehicleService.GetVehicleById(id);
 
                 if (vehicle == null)
                 {
                     return Request.CreateResponse(HttpStatusCode.NotFound, "No vehicle with that id was found");
                 }
 
-                _dataAccess.DeleteVehicle(id);
+                _vehicleService.DeleteVehicle(id);
 
                 return Request.CreateResponse(HttpStatusCode.OK, "Vehicle has been deleted successfully");
             }

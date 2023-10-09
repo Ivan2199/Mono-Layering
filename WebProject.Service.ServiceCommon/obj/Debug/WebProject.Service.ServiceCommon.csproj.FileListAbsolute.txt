@@ -4,3 +4,6 @@ C:\Users\ivana\Desktop\New folder (2)\WebProject.Service.ServiceCommon\obj\Debug
 C:\Users\ivana\Desktop\New folder (2)\WebProject.Service.ServiceCommon\obj\Debug\WebProject.Service.ServiceCommon.csproj.CoreCompileInputs.cache
 C:\Users\ivana\Desktop\New folder (2)\WebProject.Service.ServiceCommon\obj\Debug\WebProject.Service.ServiceCommon.dll
 C:\Users\ivana\Desktop\New folder (2)\WebProject.Service.ServiceCommon\obj\Debug\WebProject.Service.ServiceCommon.pdb
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Service.ServiceCommon\bin\Debug\WebProject.Model.dll
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Service.ServiceCommon\bin\Debug\WebProject.Model.pdb
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Service.ServiceCommon\obj\Debug\WebProject.Service.ServiceCommon.csproj.CopyComplete

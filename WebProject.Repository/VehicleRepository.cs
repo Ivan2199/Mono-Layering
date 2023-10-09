@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Configuration;
 using Npgsql;
 using WebProject.Model;
+using WebProject.Repository.RepositoryCommon;
 
 namespace WebProject.Data
 {
-    public class DataAccess
+    public class DataAccess : IVehicleRepository
     {
         private readonly string _connectionString = ConfigurationManager.ConnectionStrings["ABCD"].ToString();
         private NpgsqlConnection _connection;
@@ -15,6 +16,7 @@ namespace WebProject.Data
         {
             _connection = new NpgsqlConnection(_connectionString);
             _connection.Open();
+            InitializeDatabase();
         }
 
         public void CloseConnection()
@@ -28,14 +30,14 @@ namespace WebProject.Data
             {
                 cmd.Connection = _connection;
 
-                cmd.CommandText = "CREATE TABLE IF NOT EXISTS Vehicle (" +
-                    "Id SERIAL PRIMARY KEY," +
-                    "VehicleType VARCHAR(255)," +
-                    "VehicleBrand VARCHAR(255)," +
-                    "YearOfProduction INT," +
-                    "TopSpeed INT," +
-                    "VehicleMileage INT," +
-                    "VehicleOwner VARCHAR(255))";
+                cmd.CommandText = "CREATE TABLE IF NOT EXISTS \"Vehicle\" (" +
+                    "\"Id\" SERIAL PRIMARY KEY," +
+                    "\"VehicleType\" VARCHAR(255)," +
+                    "\"VehicleBrand\" VARCHAR(255)," +
+                    "\"YearOfProduction\" INT," +
+                    "\"TopSpeed\" INT," +
+                    "\"VehicleMileage\" INT," +
+                    "\"VehicleOwner\" VARCHAR(255))";
                 cmd.ExecuteNonQuery();
             }
         }
@@ -50,17 +52,18 @@ namespace WebProject.Data
             {
                 cmd.Connection = _connection;
 
-                var select = "SELECT v.*, h.* FROM Vehicle v LEFT JOIN VehicleServiceHistory h ON v.Id = h.VehicleId";
+                var select = $"SELECT v.*, h.* FROM \"Vehicle\" v LEFT JOIN \"VehicleServiceHistory\" h ON v.\"Id\" = h.\"VehicleId\"";
 
                 if (!string.IsNullOrWhiteSpace(vehicleType))
                 {
                     cmd.Parameters.AddWithValue("@type", vehicleType);
-                    cmd.CommandText = $"{select} WHERE v.VehicleType = @type ORDER BY v.Id, h.ServiceDate";
+                    cmd.CommandText = $"{select} WHERE v.\"VehicleType\" = @type ORDER BY v.\"Id\", h.\"ServiceDate\"";
                 }
                 else
                 {
-                    cmd.CommandText = $"{select} ORDER BY v.Id, h.ServiceDate";
+                    cmd.CommandText = $"{select} ORDER BY v.\"Id\", h.\"ServiceDate\"";
                 }
+
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -70,7 +73,6 @@ namespace WebProject.Data
 
                         if (currentVehicle == null || currentVehicle.Id != currentVehicleId)
                         {
-                            // New vehicle detected
                             if (currentVehicle != null)
                             {
                                 currentVehicle.VehicleServiceHistory = currentServiceHistories;
@@ -102,16 +104,16 @@ namespace WebProject.Data
         public Vehicle GetVehicleById(int id)
         {
             Vehicle vehicle = null;
-            List<VehicleServiceHistory> serviceHistories = new List<VehicleServiceHistory>();  // Initialize the list to avoid null reference
+            List<VehicleServiceHistory> serviceHistories = new List<VehicleServiceHistory>();
 
             using (var cmd = new NpgsqlCommand())
             {
                 cmd.Connection = _connection;
 
-                cmd.CommandText = "SELECT v.*, h.* FROM Vehicle v " +
-                                  "LEFT JOIN VehicleServiceHistory h ON v.Id = h.VehicleId " +
-                                  "WHERE v.Id = @id " +
-                                  "ORDER BY v.Id, h.Id";
+                cmd.CommandText = $"SELECT v.*, h.* FROM \"Vehicle\" v " +
+                                  $"LEFT JOIN \"VehicleServiceHistory\" h ON v.\"Id\" = h.\"VehicleId\" " +
+                                  $"WHERE v.\"Id\" = @id " +
+                                  $"ORDER BY v.\"Id\", h.\"Id\"";
                 cmd.Parameters.AddWithValue("@id", id);
 
                 using (var reader = cmd.ExecuteReader())
@@ -166,7 +168,7 @@ namespace WebProject.Data
             {
                 cmd.Connection = _connection;
 
-                cmd.CommandText = "INSERT INTO Vehicle (VehicleType, VehicleBrand, YearOfProduction, TopSpeed, VehicleMileage, VehicleOwner)" +
+                cmd.CommandText = "INSERT INTO \"Vehicle\" (\"VehicleType\", \"VehicleBrand\", \"YearOfProduction\", \"TopSpeed\", \"VehicleMileage\", \"VehicleOwner\")" +
                                   "VALUES (@type, @brand, @year, @speed, @mileage, @owner)";
                 AddVehicleParameters(cmd, vehicle);
 
@@ -180,9 +182,9 @@ namespace WebProject.Data
             {
                 cmd.Connection = _connection;
 
-                cmd.CommandText = "UPDATE Vehicle SET VehicleType = @type, VehicleBrand = @brand, " +
-                                  "YearOfProduction = @year, TopSpeed = @speed, VehicleMileage = @mileage, " +
-                                  "VehicleOwner = @owner WHERE Id = @id";
+                cmd.CommandText = "UPDATE \"Vehicle\" SET \"VehicleType\" = @type, \"VehicleBrand\" = @brand, " +
+                                  "\"YearOfProduction\" = @year, \"TopSpeed\" = @speed, \"VehicleMileage\" = @mileage, " +
+                                  "\"VehicleOwner\" = @owner WHERE \"Id\" = @id";
                 cmd.Parameters.AddWithValue("@id", id);
                 AddVehicleParameters(cmd, updatedVehicle);
 
@@ -196,7 +198,7 @@ namespace WebProject.Data
             {
                 cmd.Connection = _connection;
 
-                cmd.CommandText = "DELETE FROM Vehicle WHERE Id = @id";
+                cmd.CommandText = "DELETE FROM \"Vehicle\" WHERE \"Id\" = @id";
                 cmd.Parameters.AddWithValue("@id", id);
 
                 cmd.ExecuteNonQuery();
@@ -215,21 +217,6 @@ namespace WebProject.Data
             cmd.Parameters.AddWithValue("@owner", vehicle.VehicleOwner);
         }
 
-        private List<VehicleServiceHistory> MapServiceHistoryFromReader(NpgsqlDataReader reader)
-        {
-            var serviceHistories = new List<VehicleServiceHistory>();
-
-            while (reader.Read())
-            {
-                var serviceHistory = MapVehicleServiceHistoryFromReader(reader);
-                serviceHistories.Add(serviceHistory);
-            }
-
-            reader.NextResult();
-
-            return serviceHistories;
-        }
-
         private Vehicle MapVehicleFromReader(NpgsqlDataReader reader)
         {
             var vehicle = new Vehicle()
@@ -241,25 +228,23 @@ namespace WebProject.Data
                 TopSpeed = Convert.ToInt32(reader["TopSpeed"]),
                 VehicleMileage = Convert.ToInt32(reader["VehicleMileage"]),
                 VehicleOwner = Convert.ToString(reader["VehicleOwner"]),
-                VehicleServiceHistory = reader[7] != DBNull.Value ? new List<VehicleServiceHistory>
-                { 
+                VehicleServiceHistory = reader["ServiceDate"] != DBNull.Value ? new List<VehicleServiceHistory>
+                {
                   new VehicleServiceHistory()
                   {
-                      Id = Convert.ToInt32(reader[7])
+                      Id = Convert.ToInt32(reader[8])
                   }
-                }: null,
+                } : null,
             };
 
             return vehicle;
         }
 
-
-
         private VehicleServiceHistory MapVehicleServiceHistoryFromReader(NpgsqlDataReader reader)
         {
             return new VehicleServiceHistory
             {
-                Id = Convert.ToInt32(reader["Id"]),
+                Id = Convert.ToInt32(reader[7]),
                 VehicleId = Convert.ToInt32(reader["VehicleId"]),
                 ServiceDate = Convert.ToDateTime(reader["ServiceDate"]).Date,
                 ServiceDescription = Convert.ToString(reader["ServiceDescription"]),

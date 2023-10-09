@@ -405,18 +405,6 @@
     <Content Include="Scripts\jquery-3.4.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WebProject.Common\WebProject.Common.csproj">
-      <Project>{87e86def-4d45-41a7-b2fc-b9625581b2b0}</Project>
-      <Name>WebProject.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WebProject.DAL\WebProject.DAL.csproj">
-      <Project>{c7d9cce2-e5a9-42d7-bfbb-dd5348006c91}</Project>
-      <Name>WebProject.DAL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WebProject.Model.ModelCommon\WebProject.Model.ModelCommon.csproj">
-      <Project>{c26e30e8-3be3-4a3a-a202-96b03af967c1}</Project>
-      <Name>WebProject.Model.ModelCommon</Name>
-    </ProjectReference>
     <ProjectReference Include="..\WebProject.Model\WebProject.Model.csproj">
       <Project>{38140503-fef4-4802-b54d-7993683b458e}</Project>
       <Name>WebProject.Model</Name>
@@ -424,10 +412,6 @@
     <ProjectReference Include="..\WebProject.Repository.RepositoryCommon\WebProject.Repository.RepositoryCommon.csproj">
       <Project>{d87fae9e-5fdb-46c0-9b8d-ae2a17c772e5}</Project>
       <Name>WebProject.Repository.RepositoryCommon</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WebProject.Repository\WebProject.Repository.csproj">
-      <Project>{82cc2565-4dba-4b26-8073-f104bd15394a}</Project>
-      <Name>WebProject.Repository</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebProject.Service.ServiceCommon\WebProject.Service.ServiceCommon.csproj">
       <Project>{6b408a2f-4b86-4020-8bd3-ac61e2c0e02d}</Project>
