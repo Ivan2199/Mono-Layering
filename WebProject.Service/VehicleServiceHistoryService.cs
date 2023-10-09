@@ -20,14 +20,7 @@ namespace WebProject.Service
 
         public async Task<List<VehicleServiceHistory>> GetVehicleHistoryServices()
         {
-            try
-            {
-                return await _dataAccessVehicleServiceHistory.GetVehicleHistoryServices();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            return await _dataAccessVehicleServiceHistory.GetVehicleHistoryServices();
         }
 
         public async Task<List<VehicleServiceHistory>> GetVehicleServiceHistoryById(Guid id)

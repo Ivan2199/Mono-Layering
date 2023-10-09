@@ -19,67 +19,27 @@ namespace WebProject.Service
 
         public async Task<List<Vehicle>> GetVehicles(string vehicleType = null)
         {
-            try
-            {
-                return await _dataAccess.GetVehicles(vehicleType);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception or handle it as needed
-                throw;
-            }
+            return await _dataAccess.GetVehicles(vehicleType);
         }
 
         public async Task<Vehicle> GetVehicleById(Guid id)
         {
-            try
-            {
-                return await _dataAccess.GetVehicleById(id);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception or handle it as needed
-                throw;
-            }
+             return await _dataAccess.GetVehicleById(id);
         }
 
         public async Task AddVehicle(Vehicle vehicle)
         {
-            try
-            {
-                await _dataAccess.AddVehicle(vehicle);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception or handle it as needed
-                throw;
-            }
+            await _dataAccess.AddVehicle(vehicle);
         }
 
         public async Task UpdateVehicle(Guid id, Vehicle updatedVehicle)
         {
-            try
-            {
-                await _dataAccess.UpdateVehicle(id, updatedVehicle);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception or handle it as needed
-                throw;
-            }
+            await _dataAccess.UpdateVehicle(id, updatedVehicle);
         }
 
         public async Task DeleteVehicle(Guid id)
         {
-            try
-            {
-                await _dataAccess.DeleteVehicle(id);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception or handle it as needed
-                throw;
-            }
+             await _dataAccess.DeleteVehicle(id);
         }
     }
 }
