@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using WebProject.Model.ModelCommon;
 
 namespace WebProject.Model
 {
-    public class VehicleServiceHistory
+    public class VehicleServiceHistory : IVehicleServiceHistory
     {
         public Guid Id { get; set; }
         public Guid VehicleId { get; set; }
@@ -17,7 +18,7 @@ namespace WebProject.Model
 
 
 
-        public Vehicle Vehicle { get; set; }
+        public IVehicle Vehicle { get; set; }
     }
 }
 

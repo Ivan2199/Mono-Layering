@@ -5,16 +5,17 @@ using System.Web.Http;
 using WebProject.Service;
 using System.Threading.Tasks;
 using WebProject.Model;
+using WebProject.Service.ServiceCommon;
 
 namespace WebProject.Controllers
 {
     public class VehicleController : ApiController
     {
-        private readonly VehicleService _vehicleService;
+        private readonly IVehicleService _vehicleService;
 
-        public VehicleController()
+        public VehicleController(IVehicleService vehicleService)
         {
-            _vehicleService = new VehicleService();
+            _vehicleService = vehicleService;
         }
 
         [HttpGet]

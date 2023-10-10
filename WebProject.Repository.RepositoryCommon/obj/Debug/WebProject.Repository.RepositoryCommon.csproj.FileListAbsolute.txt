@@ -7,3 +7,5 @@ C:\Users\ivana\Desktop\New folder (2)\WebProject.Repository.RepositoryCommon\obj
 C:\Users\ivana\Desktop\New folder (2)\WebProject.Repository.RepositoryCommon\bin\Debug\WebProject.Model.dll
 C:\Users\ivana\Desktop\New folder (2)\WebProject.Repository.RepositoryCommon\bin\Debug\WebProject.Model.pdb
 C:\Users\ivana\Desktop\New folder (2)\WebProject.Repository.RepositoryCommon\obj\Debug\WebProject.Repository.RepositoryCommon.csproj.CopyComplete
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Repository.RepositoryCommon\bin\Debug\WebProject.Model.ModelCommon.dll
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Repository.RepositoryCommon\bin\Debug\WebProject.Model.ModelCommon.pdb

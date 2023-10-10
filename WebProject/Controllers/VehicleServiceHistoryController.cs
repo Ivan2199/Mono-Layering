@@ -5,16 +5,17 @@ using System.Web.Http;
 using System.Threading.Tasks;
 using WebProject.Service;
 using WebProject.Model;
+using WebProject.Service.ServiceCommon;
 
 namespace WebProject.Controllers
 {
     public class VehicleServiceHistoryController : ApiController
     {
-        private readonly VehicleServiceHistoryService _dataAccessVehicleServiceHistory;
+        private readonly IVehicleServiceHistoryService _dataAccessVehicleServiceHistory;
 
-        public VehicleServiceHistoryController()
+        public VehicleServiceHistoryController(IVehicleServiceHistoryService dataAccessVehicleServiceHistory)
         {
-            _dataAccessVehicleServiceHistory = new VehicleServiceHistoryService();
+            _dataAccessVehicleServiceHistory = dataAccessVehicleServiceHistory;
         }
 
         // GET api/VehicleServiceHistory

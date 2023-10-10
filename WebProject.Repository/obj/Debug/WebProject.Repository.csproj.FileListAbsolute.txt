@@ -40,3 +40,7 @@ C:\Users\ivana\Desktop\New folder (2)\WebProject.Repository\obj\Debug\WebProject
 C:\Users\ivana\Desktop\New folder (2)\WebProject.Repository\obj\Debug\WebProject.Repository.pdb
 C:\Users\ivana\Desktop\New folder (2)\WebProject.Repository\bin\Debug\WebProject.Repository.RepositoryCommon.dll
 C:\Users\ivana\Desktop\New folder (2)\WebProject.Repository\bin\Debug\WebProject.Repository.RepositoryCommon.pdb
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Repository\bin\Debug\WebProject.Service.ServiceCommon.dll
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Repository\bin\Debug\WebProject.Service.ServiceCommon.pdb
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Repository\bin\Debug\WebProject.Model.ModelCommon.dll
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Repository\bin\Debug\WebProject.Model.ModelCommon.pdb

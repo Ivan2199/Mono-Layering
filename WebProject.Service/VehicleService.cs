@@ -4,25 +4,28 @@ using WebProject.Data;
 using WebProject.Model;
 using System.Threading.Tasks;
 using WebProject.Service.ServiceCommon;
+using WebProject.Repository.RepositoryCommon;
+using WebProject.Model.ModelCommon;
 
 namespace WebProject.Service
 {
     public class VehicleService : IVehicleService
     {
-        private readonly DataAccess _dataAccess;
+       
+        private readonly IVehicleRepository _dataAccess;
 
-        public VehicleService()
+        public VehicleService(IVehicleRepository dataAccess)
         {
-            _dataAccess = new DataAccess();
+            _dataAccess = dataAccess;
             _dataAccess.InitializeDatabase();
         }
 
-        public async Task<List<Vehicle>> GetVehicles(string vehicleType = null)
+        public async Task<List<IVehicle>> GetVehicles(string vehicleType = null)
         {
             return await _dataAccess.GetVehicles(vehicleType);
         }
 
-        public async Task<Vehicle> GetVehicleById(Guid id)
+        public async Task<IVehicle> GetVehicleById(Guid id)
         {
              return await _dataAccess.GetVehicleById(id);
         }

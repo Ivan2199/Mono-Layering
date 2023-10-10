@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Npgsql;
 using WebProject.Model;
+using WebProject.Model.ModelCommon;
 using WebProject.Repository.RepositoryCommon;
 
 namespace WebProject.Data
@@ -44,11 +45,11 @@ namespace WebProject.Data
             }
         }
 
-        public async Task<List<Vehicle>> GetVehicles(string vehicleType = null)
+        public async Task<List<IVehicle>> GetVehicles(string vehicleType = null)
         {
-            var vehicles = new List<Vehicle>();
-            Vehicle currentVehicle = null;
-            List<VehicleServiceHistory> currentServiceHistories = null;
+            var vehicles = new List<IVehicle>();
+            IVehicle currentVehicle = null;
+            List<IVehicleServiceHistory> currentServiceHistories = null;
 
             using (var cmd = new NpgsqlCommand())
             {
@@ -82,7 +83,7 @@ namespace WebProject.Data
                             }
 
                             currentVehicle = MapVehicleFromReader(reader);
-                            currentServiceHistories = new List<VehicleServiceHistory>();
+                            currentServiceHistories = new List<IVehicleServiceHistory>();
                         }
 
                         if (!reader.IsDBNull(reader.GetOrdinal("ServiceDate")))
@@ -103,10 +104,10 @@ namespace WebProject.Data
             return vehicles;
         }
 
-        public async Task<Vehicle> GetVehicleById(Guid id)
+        public async Task<IVehicle> GetVehicleById(Guid id)
         {
-            Vehicle vehicle = null;
-            List<VehicleServiceHistory> serviceHistories = new List<VehicleServiceHistory>();
+            IVehicle vehicle = null;
+            List<IVehicleServiceHistory> serviceHistories = new List<IVehicleServiceHistory>();
 
             using (var cmd = new NpgsqlCommand())
             {
@@ -143,7 +144,7 @@ namespace WebProject.Data
             return vehicle;
         }
 
-        public async Task AddVehicle(Vehicle vehicle)
+        public async Task AddVehicle(IVehicle vehicle)
         {
             using (var cmd = new NpgsqlCommand())
             {
@@ -160,7 +161,7 @@ namespace WebProject.Data
             }
         }
 
-        public async Task UpdateVehicle(Guid id, Vehicle updatedVehicle)
+        public async Task UpdateVehicle(Guid id, IVehicle updatedVehicle)
         {
             using (var cmd = new NpgsqlCommand())
             {
@@ -182,16 +183,19 @@ namespace WebProject.Data
             {
                 cmd.Connection = _connection;
 
-                cmd.CommandText = "DELETE FROM \"Vehicle\" WHERE \"Id\" = @id";
+                cmd.CommandText = "DELETE FROM \"VehicleServiceHistory\" WHERE \"VehicleId\" = @id";
                 cmd.Parameters.AddWithValue("@id", id);
+                await cmd.ExecuteNonQueryAsync();
 
+                cmd.CommandText = "DELETE FROM \"Vehicle\" WHERE \"Id\" = @id";
                 await cmd.ExecuteNonQueryAsync();
             }
         }
 
 
 
-        private void AddVehicleParameters(NpgsqlCommand cmd, Vehicle vehicle)
+
+        private void AddVehicleParameters(NpgsqlCommand cmd, IVehicle vehicle)
         {
             cmd.Parameters.AddWithValue("@type", vehicle.VehicleType);
             cmd.Parameters.AddWithValue("@brand", vehicle.VehicleBrand);
@@ -201,9 +205,9 @@ namespace WebProject.Data
             cmd.Parameters.AddWithValue("@owner", vehicle.VehicleOwner);
         }
 
-        private Vehicle MapVehicleFromReader(NpgsqlDataReader reader)
+        private IVehicle MapVehicleFromReader(NpgsqlDataReader reader)
         {
-            var vehicle = new Vehicle()
+            IVehicle vehicle = new Vehicle()
             {
                 Id = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty,
                 VehicleType = Convert.ToString(reader["VehicleType"]),
@@ -212,7 +216,7 @@ namespace WebProject.Data
                 TopSpeed = Convert.ToInt32(reader["TopSpeed"]),
                 VehicleMileage = Convert.ToInt32(reader["VehicleMileage"]),
                 VehicleOwner = Convert.ToString(reader["VehicleOwner"]),
-                VehicleServiceHistory = reader["ServiceDate"] != DBNull.Value ? new List<VehicleServiceHistory>
+                VehicleServiceHistory = reader["ServiceDate"] != DBNull.Value ? new List<IVehicleServiceHistory>
                 {
                   new VehicleServiceHistory()
                   {
@@ -224,7 +228,7 @@ namespace WebProject.Data
             return vehicle;
         }
 
-        private VehicleServiceHistory MapVehicleServiceHistoryFromReader(NpgsqlDataReader reader)
+        private IVehicleServiceHistory MapVehicleServiceHistoryFromReader(NpgsqlDataReader reader)
         {
             return new VehicleServiceHistory
             {

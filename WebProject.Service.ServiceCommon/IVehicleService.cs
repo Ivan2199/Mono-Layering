@@ -5,15 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using WebProject.Service;
 using WebProject.Model;
-
+using WebProject.Model.ModelCommon;
 
 namespace WebProject.Service.ServiceCommon
 {
     public interface IVehicleService
     {
-        Task<List<Vehicle>> GetVehicles(string vehicleType = null);
+        Task<List<IVehicle>> GetVehicles(string vehicleType = null);
 
-        Task<Vehicle> GetVehicleById(Guid id);
+        Task<IVehicle> GetVehicleById(Guid id);
 
         Task AddVehicle(Vehicle vehicle);
 

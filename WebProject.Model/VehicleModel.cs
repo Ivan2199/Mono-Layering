@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WebProject.Model.ModelCommon;
 
 namespace WebProject.Model
 {
-    public class Vehicle
+    public class Vehicle : IVehicle
     {
         public Guid Id { get; set; }
         public string VehicleType { get; set; }
@@ -15,7 +16,7 @@ namespace WebProject.Model
         public int VehicleMileage { get; set; }
         public string VehicleOwner { get; set; }
 
-        public List<VehicleServiceHistory> VehicleServiceHistory { get; set; }
+        public List<IVehicleServiceHistory> VehicleServiceHistory { get; set; }
     }
 
 }

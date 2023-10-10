@@ -49,9 +49,17 @@
     <Compile Include="VehicleServiceHistoryService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WebProject.Model.ModelCommon\WebProject.Model.ModelCommon.csproj">
+      <Project>{C26E30E8-3BE3-4A3A-A202-96B03AF967C1}</Project>
+      <Name>WebProject.Model.ModelCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WebProject.Model\WebProject.Model.csproj">
       <Project>{38140503-fef4-4802-b54d-7993683b458e}</Project>
       <Name>WebProject.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebProject.Repository.RepositoryCommon\WebProject.Repository.RepositoryCommon.csproj">
+      <Project>{d87fae9e-5fdb-46c0-9b8d-ae2a17c772e5}</Project>
+      <Name>WebProject.Repository.RepositoryCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebProject.Repository\WebProject.Repository.csproj">
       <Project>{82cc2565-4dba-4b26-8073-f104bd15394a}</Project>

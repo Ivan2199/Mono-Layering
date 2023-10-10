@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebProject.Model;
+using WebProject.Model.ModelCommon;
 
 namespace WebProject.Repository.RepositoryCommon
 {
@@ -12,13 +13,13 @@ namespace WebProject.Repository.RepositoryCommon
 
         Task InitializeDatabase();
 
-        Task<List<Vehicle>> GetVehicles(string vehicleType = null);
+        Task<List<IVehicle>> GetVehicles(string vehicleType = null);
 
-        Task<Vehicle> GetVehicleById(Guid id);
+        Task<IVehicle> GetVehicleById(Guid id);
 
-        Task AddVehicle(Vehicle vehicle);
+        Task AddVehicle(IVehicle vehicle);
 
-        Task UpdateVehicle(Guid id, Vehicle updatedVehicle);
+        Task UpdateVehicle(Guid id, IVehicle updatedVehicle);
 
         Task DeleteVehicle(Guid id);
     }

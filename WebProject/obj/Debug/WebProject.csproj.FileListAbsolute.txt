@@ -242,3 +242,9 @@ C:\Users\ivana\Desktop\New folder (2)\WebProject\bin\WebProject.Repository.dll.c
 C:\Users\ivana\Desktop\New folder (2)\WebProject\bin\WebProject.Service.ServiceCommon.pdb
 C:\Users\ivana\Desktop\New folder (2)\WebProject\bin\WebProject.Service.pdb
 C:\Users\ivana\Desktop\New folder (2)\WebProject\bin\WebProject.Service.dll.config
+C:\Users\ivana\Desktop\New folder (2)\WebProject\bin\Autofac.dll
+C:\Users\ivana\Desktop\New folder (2)\WebProject\bin\Autofac.xml
+C:\Users\ivana\Desktop\New folder (2)\WebProject\bin\Autofac.Integration.WebApi.dll
+C:\Users\ivana\Desktop\New folder (2)\WebProject\bin\Autofac.Integration.WebApi.xml
+C:\Users\ivana\Desktop\New folder (2)\WebProject\bin\WebProject.Model.ModelCommon.dll
+C:\Users\ivana\Desktop\New folder (2)\WebProject\bin\WebProject.Model.ModelCommon.pdb

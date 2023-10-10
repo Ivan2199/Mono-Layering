@@ -5,6 +5,7 @@ using Npgsql;
 using WebProject.Model;
 using System.Threading.Tasks;
 using WebProject.Repository.RepositoryCommon;
+using WebProject.Model.ModelCommon;
 
 namespace WebProject.Data
 {
@@ -35,9 +36,9 @@ namespace WebProject.Data
             }
         }
 
-        public async Task<List<VehicleServiceHistory>> GetVehicleHistoryServices()
+        public async Task<List<IVehicleServiceHistory>> GetVehicleHistoryServices()
         {
-            List<VehicleServiceHistory> vehicleServiceHistories = new List<VehicleServiceHistory>();
+            List<IVehicleServiceHistory> vehicleServiceHistories = new List<IVehicleServiceHistory>();
 
             using (var con = new NpgsqlConnection(_connectionString))
             {
@@ -59,9 +60,9 @@ namespace WebProject.Data
             return vehicleServiceHistories;
         }
 
-        public async Task<List<VehicleServiceHistory>> GetVehicleServiceHistoryById(Guid id)
+        public async Task<List<IVehicleServiceHistory>> GetVehicleServiceHistoryById(Guid id)
         {
-            List<VehicleServiceHistory> vehicleServiceHistories = new List<VehicleServiceHistory>();
+            List<IVehicleServiceHistory> vehicleServiceHistories = new List<IVehicleServiceHistory>();
             using (var con = new NpgsqlConnection(_connectionString))
             {
                 await con.OpenAsync();
@@ -83,7 +84,7 @@ namespace WebProject.Data
             return vehicleServiceHistories;
         }
 
-        public async Task AddVehicleServiceHistory(VehicleServiceHistory vehicleServiceHistory)
+        public async Task AddVehicleServiceHistory(IVehicleServiceHistory vehicleServiceHistory)
         {
             using (var con = new NpgsqlConnection(_connectionString))
             {
@@ -105,7 +106,7 @@ namespace WebProject.Data
             }
         }
 
-        public async Task UpdateVehicleServiceHistory(Guid id, VehicleServiceHistory vehicleServiceHistory)
+        public async Task UpdateVehicleServiceHistory(Guid id, IVehicleServiceHistory vehicleServiceHistory)
         {
             using (var con = new NpgsqlConnection(_connectionString))
             {
@@ -145,18 +146,18 @@ namespace WebProject.Data
             }
         }
 
-        private List<VehicleServiceHistory> MapVehicleServiceHistoryFromReader(NpgsqlDataReader reader)
+        private List<IVehicleServiceHistory> MapVehicleServiceHistoryFromReader(NpgsqlDataReader reader)
         {
             if (reader == null || !reader.HasRows)
             {
-                return new List<VehicleServiceHistory>();
+                return new List<IVehicleServiceHistory>();
             }
 
-            List<VehicleServiceHistory> serviceHistoryList = new List<VehicleServiceHistory>();
+            List<IVehicleServiceHistory> serviceHistoryList = new List<IVehicleServiceHistory>();
 
             while (reader.Read())
             {
-                var vehicleServiceHistory = new VehicleServiceHistory
+                IVehicleServiceHistory vehicleServiceHistory = new VehicleServiceHistory
                 {
                     Id = (Guid)reader["Id"],
                     VehicleId = (Guid)reader["VehicleId"],
@@ -173,7 +174,7 @@ namespace WebProject.Data
 
 
 
-        private void AddVehicleServiceHistoryParameters(NpgsqlCommand cmd, VehicleServiceHistory vehicleServiceHistory)
+        private void AddVehicleServiceHistoryParameters(NpgsqlCommand cmd, IVehicleServiceHistory vehicleServiceHistory)
         {
             cmd.Parameters.AddWithValue("@vehicleId", vehicleServiceHistory.VehicleId);
             cmd.Parameters.AddWithValue("@serviceDate", vehicleServiceHistory.ServiceDate);

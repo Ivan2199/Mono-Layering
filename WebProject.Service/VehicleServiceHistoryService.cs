@@ -5,25 +5,27 @@ using System.Text;
 using System.Threading.Tasks;
 using WebProject.Data;
 using WebProject.Model;
+using WebProject.Model.ModelCommon;
+using WebProject.Repository.RepositoryCommon;
 using WebProject.Service.ServiceCommon;
 
 namespace WebProject.Service
 {
     public class VehicleServiceHistoryService : IVehicleServiceHistoryService
     {
-        private readonly DataAccessVehicleServiceHistory _dataAccessVehicleServiceHistory;
-        public VehicleServiceHistoryService()
+        private readonly IVehicleServiceHistoryRepository _dataAccessVehicleServiceHistory;
+        public VehicleServiceHistoryService(IVehicleServiceHistoryRepository dataAccessVehicleServiceHistory)
         {
-            _dataAccessVehicleServiceHistory = new DataAccessVehicleServiceHistory();
+            _dataAccessVehicleServiceHistory = dataAccessVehicleServiceHistory;
             _dataAccessVehicleServiceHistory.InitializeDatabase();
         }
 
-        public async Task<List<VehicleServiceHistory>> GetVehicleHistoryServices()
+        public async Task<List<IVehicleServiceHistory>> GetVehicleHistoryServices()
         {
             return await _dataAccessVehicleServiceHistory.GetVehicleHistoryServices();
         }
 
-        public async Task<List<VehicleServiceHistory>> GetVehicleServiceHistoryById(Guid id)
+        public async Task<List<IVehicleServiceHistory>> GetVehicleServiceHistoryById(Guid id)
         {
             return await _dataAccessVehicleServiceHistory.GetVehicleServiceHistoryById(id);
         }
