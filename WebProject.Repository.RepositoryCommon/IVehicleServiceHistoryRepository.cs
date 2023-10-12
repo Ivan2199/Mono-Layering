@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebProject.Model;
-using WebProject.Model.ModelCommon;
+using WebProject.Model.Common;
 
-namespace WebProject.Repository.RepositoryCommon
+namespace WebProject.Repository.Common
 {
     public interface IVehicleServiceHistoryRepository
     {
-        Task InitializeDatabase();
+        Task InitializeDatabaseAsync();
         Task<List<IVehicleServiceHistory>> GetVehicleHistoryServices();
         Task<List<IVehicleServiceHistory>> GetVehicleServiceHistoryById(Guid id);
         Task AddVehicleServiceHistory(IVehicleServiceHistory vehicleServiceHistory);

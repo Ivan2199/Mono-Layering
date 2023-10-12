@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProject", "WebProject\WebProject.csproj", "{73B5ECE2-7111-4587-BDE4-8B7AD4FEF196}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProject.WebApi", "WebProject\WebProject.WebApi.csproj", "{73B5ECE2-7111-4587-BDE4-8B7AD4FEF196}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProject.Service", "WebProject.Service\WebProject.Service.csproj", "{2C6CCCA4-3A3E-4335-BAF2-176B9752CCA8}"
 EndProject
@@ -13,11 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProject.DAL", "WebProjec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProject.Model", "WebProject.Model\WebProject.Model.csproj", "{38140503-FEF4-4802-B54D-7993683B458E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProject.Service.ServiceCommon", "WebProject.Service.ServiceCommon\WebProject.Service.ServiceCommon.csproj", "{6B408A2F-4B86-4020-8BD3-AC61E2C0E02D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProject.Service.Common", "WebProject.Service.ServiceCommon\WebProject.Service.Common.csproj", "{6B408A2F-4B86-4020-8BD3-AC61E2C0E02D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProject.Repository.RepositoryCommon", "WebProject.Repository.RepositoryCommon\WebProject.Repository.RepositoryCommon.csproj", "{D87FAE9E-5FDB-46C0-9B8D-AE2A17C772E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProject.Repository.Common", "WebProject.Repository.RepositoryCommon\WebProject.Repository.Common.csproj", "{D87FAE9E-5FDB-46C0-9B8D-AE2A17C772E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProject.Model.ModelCommon", "WebProject.Model.ModelCommon\WebProject.Model.ModelCommon.csproj", "{C26E30E8-3BE3-4A3A-A202-96B03AF967C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProject.Model.Common", "WebProject.Model.ModelCommon\WebProject.Model.Common.csproj", "{C26E30E8-3BE3-4A3A-A202-96B03AF967C1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProject.Common", "WebProject.Common\WebProject.Common.csproj", "{87E86DEF-4D45-41A7-B2FC-B9625581B2B0}"
 EndProject

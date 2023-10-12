@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using WebProject.Data;
 using WebProject.Model;
-using WebProject.Model.ModelCommon;
-using WebProject.Repository.RepositoryCommon;
-using WebProject.Service.ServiceCommon;
+using WebProject.Model.Common;
+using WebProject.Repository.Common;
+using WebProject.Service.Common;
 
 namespace WebProject.Service
 {
@@ -17,28 +17,27 @@ namespace WebProject.Service
         public VehicleServiceHistoryService(IVehicleServiceHistoryRepository dataAccessVehicleServiceHistory)
         {
             _dataAccessVehicleServiceHistory = dataAccessVehicleServiceHistory;
-            _dataAccessVehicleServiceHistory.InitializeDatabase();
         }
 
-        public async Task<List<IVehicleServiceHistory>> GetVehicleHistoryServices()
+        public async Task<List<IVehicleServiceHistory>> GetVehicleHistoryServicesAsync()
         {
             return await _dataAccessVehicleServiceHistory.GetVehicleHistoryServices();
         }
 
-        public async Task<List<IVehicleServiceHistory>> GetVehicleServiceHistoryById(Guid id)
+        public async Task<List<IVehicleServiceHistory>> GetVehicleServiceHistoryByIdAsync(Guid id)
         {
             return await _dataAccessVehicleServiceHistory.GetVehicleServiceHistoryById(id);
         }
 
-        public async Task AddVehicleServiceHistory(VehicleServiceHistory vehicleServiceHistory)
+        public async Task AddVehicleServiceHistoryAsync(VehicleServiceHistory vehicleServiceHistory)
         {
             await _dataAccessVehicleServiceHistory.AddVehicleServiceHistory(vehicleServiceHistory);
         }
-        public async Task UpdateVehicleServiceHistory(Guid id, VehicleServiceHistory vehicleServiceHistory)
+        public async Task UpdateVehicleServiceHistoryAsync(Guid id, VehicleServiceHistory vehicleServiceHistory)
         {
             await _dataAccessVehicleServiceHistory.UpdateVehicleServiceHistory(id, vehicleServiceHistory);
         }
-        public async Task DeleteVehicleServiceHistory(Guid id)
+        public async Task DeleteVehicleServiceHistoryAsync(Guid id)
         {
             await _dataAccessVehicleServiceHistory.DeleteVehicleServiceHistory(id);
         }

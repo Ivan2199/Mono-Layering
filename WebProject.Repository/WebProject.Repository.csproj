@@ -95,21 +95,25 @@
     <Compile Include="VehicleServiceHistoryRepository.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WebProject.Model.ModelCommon\WebProject.Model.ModelCommon.csproj">
+    <ProjectReference Include="..\WebProject.Common\WebProject.Common.csproj">
+      <Project>{87e86def-4d45-41a7-b2fc-b9625581b2b0}</Project>
+      <Name>WebProject.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebProject.Model.ModelCommon\WebProject.Model.Common.csproj">
       <Project>{C26E30E8-3BE3-4A3A-A202-96B03AF967C1}</Project>
-      <Name>WebProject.Model.ModelCommon</Name>
+      <Name>WebProject.Model.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebProject.Model\WebProject.Model.csproj">
       <Project>{38140503-fef4-4802-b54d-7993683b458e}</Project>
       <Name>WebProject.Model</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WebProject.Repository.RepositoryCommon\WebProject.Repository.RepositoryCommon.csproj">
+    <ProjectReference Include="..\WebProject.Repository.RepositoryCommon\WebProject.Repository.Common.csproj">
       <Project>{d87fae9e-5fdb-46c0-9b8d-ae2a17c772e5}</Project>
-      <Name>WebProject.Repository.RepositoryCommon</Name>
+      <Name>WebProject.Repository.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WebProject.Service.ServiceCommon\WebProject.Service.ServiceCommon.csproj">
+    <ProjectReference Include="..\WebProject.Service.ServiceCommon\WebProject.Service.Common.csproj">
       <Project>{6b408a2f-4b86-4020-8bd3-ac61e2c0e02d}</Project>
-      <Name>WebProject.Service.ServiceCommon</Name>
+      <Name>WebProject.Service.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -3,24 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebProject.Common;
 using WebProject.Model;
-using WebProject.Model.ModelCommon;
+using WebProject.Model.Common;
 
-namespace WebProject.Repository.RepositoryCommon
+namespace WebProject.Repository.Common
 {
     public interface IVehicleRepository
     {
 
-        Task InitializeDatabase();
+        Task InitializeDatabaseAsync();
 
-        Task<List<IVehicle>> GetVehicles(string vehicleType = null);
+        Task<List<IVehicle>> GetVehiclesAsync(Paging paging, Sorting sorting, Filtering filtering);
 
-        Task<IVehicle> GetVehicleById(Guid id);
+        Task<IVehicle> GetVehicleByIdAsync(Guid id);
 
-        Task AddVehicle(IVehicle vehicle);
+        Task AddVehicleAsync(IVehicle vehicle);
 
-        Task UpdateVehicle(Guid id, IVehicle updatedVehicle);
+        Task UpdateVehicleAsync(Guid id, IVehicle updatedVehicle);
 
-        Task DeleteVehicle(Guid id);
+        Task DeleteVehicleAsync(Guid id);
     }
 }

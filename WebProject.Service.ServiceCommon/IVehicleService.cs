@@ -5,20 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using WebProject.Service;
 using WebProject.Model;
-using WebProject.Model.ModelCommon;
+using WebProject.Model.Common;
+using WebProject.Common;
 
-namespace WebProject.Service.ServiceCommon
+namespace WebProject.Service.Common
 {
     public interface IVehicleService
     {
-        Task<List<IVehicle>> GetVehicles(string vehicleType = null);
+        Task<List<IVehicle>> GetVehiclesAsync(Paging paging, Sorting sorting, Filtering filtering);
 
-        Task<IVehicle> GetVehicleById(Guid id);
+        Task<IVehicle> GetVehicleByIdAsync(Guid id);
 
-        Task AddVehicle(Vehicle vehicle);
+        Task AddVehicleAsync(Vehicle vehicle);
 
-        Task UpdateVehicle(Guid id, Vehicle updatedVehicle);
+        Task UpdateVehicleAsync(Guid id, Vehicle updatedVehicle);
 
-        Task DeleteVehicle(Guid id);
+        Task DeleteVehicleAsync(Guid id);
     }
 }

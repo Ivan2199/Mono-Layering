@@ -3,9 +3,9 @@ using Autofac.Integration.WebApi;
 using System.Web.Http;
 using WebProject.Controllers;
 using WebProject.Data;
-using WebProject.Repository.RepositoryCommon;
+using WebProject.Repository.Common;
 using WebProject.Service;
-using WebProject.Service.ServiceCommon;
+using WebProject.Service.Common;
 
 namespace WebProject.App_Start
 {
@@ -17,7 +17,7 @@ namespace WebProject.App_Start
 
             builder.RegisterType<VehicleController>();
             builder.RegisterType<VehicleService>().As<IVehicleService>();
-            builder.RegisterType<DataAccess>().As<IVehicleRepository>();
+            builder.RegisterType<DataAccessVehicleRepository>().As<IVehicleRepository>();
 
             builder.RegisterType<VehicleServiceHistoryController>();
             builder.RegisterType<VehicleServiceHistoryService>().As<IVehicleServiceHistoryService>();

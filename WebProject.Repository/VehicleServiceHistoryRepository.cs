@@ -4,8 +4,11 @@ using System.Configuration;
 using Npgsql;
 using WebProject.Model;
 using System.Threading.Tasks;
-using WebProject.Repository.RepositoryCommon;
-using WebProject.Model.ModelCommon;
+using WebProject.Repository.Common;
+using WebProject.Model.Common;
+using System.Data.Common;
+using System.Data;
+using System.Text;
 
 namespace WebProject.Data
 {
@@ -13,12 +16,16 @@ namespace WebProject.Data
     {
         private readonly string _connectionString = ConfigurationManager.ConnectionStrings["ABCD"].ToString();
 
-        public DataAccessVehicleServiceHistory() { }
-        public async Task InitializeDatabase()
+        public DataAccessVehicleServiceHistory() {
+        }
+        public async Task InitializeDatabaseAsync()
         {
             using (var con = new NpgsqlConnection(_connectionString))
             {
-                con.Open();
+                if (con.State != ConnectionState.Open)
+                {
+                    con.Open();
+                }
 
                 using (var cmd = new NpgsqlCommand())
                 {
@@ -116,19 +123,40 @@ namespace WebProject.Data
                 {
                     cmd.Connection = con;
 
+                    var sqlBuilder = new StringBuilder("UPDATE \"VehicleServiceHistory\" SET ");
+
+
+                    if (vehicleServiceHistory.ServiceDate != null)
+                    {
+                        sqlBuilder.Append("\"ServiceDate\" = @serviceDate, ");
+                        cmd.Parameters.AddWithValue("@serviceDate", vehicleServiceHistory.ServiceDate);
+                    }
+
+                    if (!string.IsNullOrEmpty(vehicleServiceHistory.ServiceDescription))
+                    {
+                        sqlBuilder.Append("\"ServiceDescription\" = @serviceDescription, ");
+                        cmd.Parameters.AddWithValue("@serviceDescription", vehicleServiceHistory.ServiceDescription);
+                    }
+
+                    if (vehicleServiceHistory.ServiceCost > 0)
+                    {
+                        sqlBuilder.Append("\"ServiceCost\" = @serviceCost, ");
+                        cmd.Parameters.AddWithValue("@serviceCost", vehicleServiceHistory.ServiceCost);
+                    }
+
+                    sqlBuilder.Length -= 2;
+
+                    sqlBuilder.Append(" WHERE \"Id\" = @id");
                     cmd.Parameters.AddWithValue("@id", id);
-                    cmd.CommandText = "UPDATE \"VehicleServiceHistory\" SET \"ServiceDate\" = @serviceDate, " +
-                                      "\"ServiceDescription\" = @serviceDescription, \"ServiceCost\" = @serviceCost " +
-                                      "WHERE \"Id\" = @id";
-                    cmd.Parameters.AddWithValue("@id", id);
-                    AddVehicleServiceHistoryParameters(cmd, vehicleServiceHistory);
+
+                    cmd.CommandText = sqlBuilder.ToString();
 
                     await cmd.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        public async Task DeleteVehicleServiceHistory(Guid id)
+            public async Task DeleteVehicleServiceHistory(Guid id)
         {
             using (var con = new NpgsqlConnection(_connectionString))
             {

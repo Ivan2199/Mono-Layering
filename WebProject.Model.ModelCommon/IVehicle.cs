@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using WebProject.Model;
 
-namespace WebProject.Model.ModelCommon
+namespace WebProject.Model.Common
 {
     public interface IVehicle
     {

@@ -3,198 +3,238 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Npgsql;
+using WebProject.Common;
 using WebProject.Model;
-using WebProject.Model.ModelCommon;
-using WebProject.Repository.RepositoryCommon;
+using WebProject.Model.Common;
+using WebProject.Repository.Common;
 
 namespace WebProject.Data
 {
-    public class DataAccess : IVehicleRepository
+    public class DataAccessVehicleRepository : IVehicleRepository
     {
         private readonly string _connectionString = ConfigurationManager.ConnectionStrings["ABCD"].ToString();
         private NpgsqlConnection _connection;
 
-        public DataAccess()
-        {
-            _connection = new NpgsqlConnection(_connectionString);
-            _connection.Open();
-            InitializeDatabase();
-        }
+        public DataAccessVehicleRepository() { }
 
-        public async Task InitializeDatabase()
+        public async Task InitializeDatabaseAsync()
         {
-            if (_connection.State != ConnectionState.Open)
+            using (var con = new NpgsqlConnection(_connectionString))
             {
-                _connection.Open();
-            }
-            using (var cmd = new NpgsqlCommand())
-            {
-                cmd.Connection = _connection;
+                if (con.State != ConnectionState.Open)
+                {
+                    con.Open();
+                }
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = con;
 
-                cmd.CommandText = "CREATE TABLE IF NOT EXISTS \"Vehicle\" (" +
-                    "\"Id\" UUID PRIMARY KEY," +
-                    "\"VehicleType\" VARCHAR(255)," +
-                    "\"VehicleBrand\" VARCHAR(255)," +
-                    "\"YearOfProduction\" INT," +
-                    "\"TopSpeed\" INT," +
-                    "\"VehicleMileage\" INT," +
-                    "\"VehicleOwner\" VARCHAR(255))";
-                await cmd.ExecuteNonQueryAsync();
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS \"Vehicle\" (" +
+                        "\"Id\" UUID PRIMARY KEY," +
+                        "\"VehicleType\" VARCHAR(255)," +
+                        "\"VehicleBrand\" VARCHAR(255)," +
+                        "\"YearOfProduction\" INT," +
+                        "\"TopSpeed\" INT," +
+                        "\"VehicleMileage\" INT," +
+                        "\"VehicleOwner\" VARCHAR(255))";
+                    await cmd.ExecuteNonQueryAsync();
+                }
             }
         }
 
-        public async Task<List<IVehicle>> GetVehicles(string vehicleType = null)
+        public async Task<List<IVehicle>> GetVehiclesAsync(Paging paging, Sorting sorting, Filtering filtering)
         {
-            var vehicles = new List<IVehicle>();
-            IVehicle currentVehicle = null;
-            List<IVehicleServiceHistory> currentServiceHistories = null;
+            var vehiclesDict = new Dictionary<Guid, IVehicle>();
 
-            using (var cmd = new NpgsqlCommand())
+            using (var con = new NpgsqlConnection(_connectionString))
             {
-                cmd.Connection = _connection;
-
-                var select = $"SELECT v.*, h.* FROM \"Vehicle\" v LEFT JOIN \"VehicleServiceHistory\" h ON v.\"Id\" = h.\"VehicleId\"";
-
-                if (!string.IsNullOrWhiteSpace(vehicleType))
+                con.Open();
+                using (var cmd = new NpgsqlCommand())
                 {
-                    cmd.Parameters.AddWithValue("@type", vehicleType);
-                    cmd.CommandText = $"{select} WHERE v.\"VehicleType\" = @type ORDER BY v.\"Id\", h.\"ServiceDate\"";
-                }
-                else
-                {
-                    cmd.CommandText = $"{select} ORDER BY v.\"Id\", h.\"ServiceDate\"";
-                }
+                    cmd.Connection = con;
+                    
 
+                    cmd.CommandText = Query(cmd, filtering, paging, sorting);
 
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
+                    using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        Guid currentVehicleId = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty;
-
-                        if (currentVehicle == null || currentVehicle.Id != currentVehicleId)
+                        while (await reader.ReadAsync())
                         {
-                            if (currentVehicle != null)
+                            IVehicle currentVehicle;
+
+                            Guid currentVehicleId = reader.GetGuid(reader.GetOrdinal("Id"));
+
+                            if (!vehiclesDict.TryGetValue(currentVehicleId, out currentVehicle))
                             {
-                                currentVehicle.VehicleServiceHistory = currentServiceHistories;
-                                vehicles.Add(currentVehicle);
+                                currentVehicle = MapVehicleFromReader(reader);
+                                vehiclesDict.Add(currentVehicleId, currentVehicle);
                             }
 
-                            currentVehicle = MapVehicleFromReader(reader);
-                            currentServiceHistories = new List<IVehicleServiceHistory>();
+                            if (!reader.IsDBNull(7))
+                            {
+                                var serviceHistory = MapVehicleServiceHistoryFromReader(reader);
+                                currentVehicle.VehicleServiceHistory.Add(serviceHistory);
+                            }
                         }
-
-                        if (!reader.IsDBNull(reader.GetOrdinal("ServiceDate")))
-                        {
-                            var serviceHistory = MapVehicleServiceHistoryFromReader(reader);
-                            currentServiceHistories.Add(serviceHistory);
-                        }
-                    }
-
-                    if (currentVehicle != null)
-                    {
-                        currentVehicle.VehicleServiceHistory = currentServiceHistories;
-                        vehicles.Add(currentVehicle);
                     }
                 }
             }
-
-            return vehicles;
+            return vehiclesDict.Values.ToList();
         }
 
-        public async Task<IVehicle> GetVehicleById(Guid id)
+
+        public async Task<IVehicle> GetVehicleByIdAsync(Guid id)
         {
             IVehicle vehicle = null;
             List<IVehicleServiceHistory> serviceHistories = new List<IVehicleServiceHistory>();
-
-            using (var cmd = new NpgsqlCommand())
+            using (var con = new NpgsqlConnection(_connectionString))
             {
-                cmd.Connection = _connection;
-
-                cmd.CommandText = $"SELECT v.*, h.* FROM \"Vehicle\" v " +
-                                  $"LEFT JOIN \"VehicleServiceHistory\" h ON v.\"Id\" = h.\"VehicleId\" " +
-                                  $"WHERE v.\"Id\" = @id";
-                cmd.Parameters.AddWithValue("@id", id);
-
-                using (var reader = await cmd.ExecuteReaderAsync())
+                con.Open();
+                using (var cmd = new NpgsqlCommand())
                 {
-                    while (await reader.ReadAsync())
-                    {
-                        if (vehicle == null)
-                        {
-                            vehicle = MapVehicleFromReader(reader);
-                        }
+                    cmd.Connection = con;
 
-                        if (!reader.IsDBNull(reader.GetOrdinal("ServiceDate")))
+                    cmd.CommandText = $"SELECT v.*, h.* FROM \"Vehicle\" v " +
+                                      $"LEFT JOIN \"VehicleServiceHistory\" h ON v.\"Id\" = h.\"VehicleId\" " +
+                                      $"WHERE v.\"Id\" = @id";
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
                         {
-                            var serviceHistory = MapVehicleServiceHistoryFromReader(reader);
-                            serviceHistories.Add(serviceHistory);
+                            if (vehicle == null)
+                            {
+                                vehicle = MapVehicleFromReader(reader);
+                            }
+
+                            if (!reader.IsDBNull(7))
+                            {
+                                var serviceHistory = MapVehicleServiceHistoryFromReader(reader);
+                                serviceHistories.Add(serviceHistory);
+                            }
                         }
                     }
                 }
             }
-
             if (vehicle != null)
             {
                 vehicle.VehicleServiceHistory = serviceHistories;
             }
+            
 
             return vehicle;
         }
 
-        public async Task AddVehicle(IVehicle vehicle)
+        public async Task AddVehicleAsync(IVehicle vehicle)
         {
-            using (var cmd = new NpgsqlCommand())
+            using (var con = new NpgsqlConnection(_connectionString))
             {
-                cmd.Connection = _connection;
+                con.Open();
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = con;
 
-                cmd.CommandText = "INSERT INTO \"Vehicle\" (\"Id\", \"VehicleType\", \"VehicleBrand\", \"YearOfProduction\", \"TopSpeed\", \"VehicleMileage\", \"VehicleOwner\")" +
-                                  "VALUES (@id, @type, @brand, @year, @speed, @mileage, @owner)";
+                    cmd.CommandText = "INSERT INTO \"Vehicle\" (\"Id\", \"VehicleType\", \"VehicleBrand\", \"YearOfProduction\", \"TopSpeed\", \"VehicleMileage\", \"VehicleOwner\")" +
+                                      "VALUES (@id, @type, @brand, @year, @speed, @mileage, @owner)";
 
-                Guid randid = System.Guid.NewGuid();
-                cmd.Parameters.AddWithValue("@id", randid);
-                AddVehicleParameters(cmd, vehicle);
+                    Guid randid = System.Guid.NewGuid();
+                    cmd.Parameters.AddWithValue("@id", randid);
+                    AddVehicleParameters(cmd, vehicle);
 
-                await cmd.ExecuteNonQueryAsync();
+                    await cmd.ExecuteNonQueryAsync();
+                }
             }
         }
 
-        public async Task UpdateVehicle(Guid id, IVehicle updatedVehicle)
+        public async Task UpdateVehicleAsync(Guid id, IVehicle updatedVehicle)
         {
-            using (var cmd = new NpgsqlCommand())
+            using (var con = new NpgsqlConnection(_connectionString))
             {
-                cmd.Connection = _connection;
+                con.Open();
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = con;
 
-                cmd.CommandText = "UPDATE \"Vehicle\" SET \"VehicleType\" = @type, \"VehicleBrand\" = @brand, " +
-                                  "\"YearOfProduction\" = @year, \"TopSpeed\" = @speed, \"VehicleMileage\" = @mileage, " +
-                                  "\"VehicleOwner\" = @owner WHERE \"Id\" = @id";
-                cmd.Parameters.AddWithValue("@id", id);
-                AddVehicleParameters(cmd, updatedVehicle);
+                    var sqlBuilder = new StringBuilder("UPDATE \"Vehicle\" SET ");
 
-               await cmd.ExecuteNonQueryAsync();
+
+                    if (updatedVehicle.VehicleType != null)
+                    {
+                        sqlBuilder.Append("\"VehicleType\" = @serviceType, ");
+                        cmd.Parameters.AddWithValue("@serviceType", updatedVehicle.VehicleType);
+                    }
+
+                    if (!string.IsNullOrEmpty(updatedVehicle.VehicleBrand))
+                    {
+                        sqlBuilder.Append("\"VehicleBrand\" = @vehicleBrand, ");
+                        cmd.Parameters.AddWithValue("@vehicleBrand", updatedVehicle.VehicleBrand);
+                    }
+                    if (updatedVehicle.VehicleMileage > 0)
+                    {
+                        sqlBuilder.Append("\"VehicleMileage\" = @vehicleMileage, ");
+                        cmd.Parameters.AddWithValue("@vehicleMileage", updatedVehicle.VehicleMileage);
+                    }
+                    if (updatedVehicle.YearOfProduction > 0)
+                    {
+                        sqlBuilder.Append("\"YearOfProduction\" = @yearOfProduction, ");
+                        cmd.Parameters.AddWithValue("@yearOfProduction", updatedVehicle.YearOfProduction);
+                    }
+                    if (updatedVehicle.VehicleOwner != null)
+                    {
+                        sqlBuilder.Append("\"VehicleOwner\" = @vehicleOwner, ");
+                        cmd.Parameters.AddWithValue("@vehicleOwner", updatedVehicle.YearOfProduction);
+                    }
+
+                    sqlBuilder.Length -= 2;
+
+                    sqlBuilder.Append(" WHERE \"Id\" = @id");
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    cmd.CommandText = sqlBuilder.ToString();
+
+                    await cmd.ExecuteNonQueryAsync();
+                }
             }
         }
 
-        public async Task DeleteVehicle(Guid id)
+        public async Task DeleteVehicleAsync(Guid id)
         {
-            using (var cmd = new NpgsqlCommand())
+            using (var con = new NpgsqlConnection(_connectionString))
             {
-                cmd.Connection = _connection;
+                con.Open();
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = con;
 
-                cmd.CommandText = "DELETE FROM \"VehicleServiceHistory\" WHERE \"VehicleId\" = @id";
-                cmd.Parameters.AddWithValue("@id", id);
-                await cmd.ExecuteNonQueryAsync();
+                    cmd.CommandText = "DELETE FROM \"VehicleServiceHistory\" WHERE \"VehicleId\" = @id";
+                    cmd.Parameters.AddWithValue("@id", id);
+                    await cmd.ExecuteNonQueryAsync();
 
-                cmd.CommandText = "DELETE FROM \"Vehicle\" WHERE \"Id\" = @id";
-                await cmd.ExecuteNonQueryAsync();
+                    cmd.CommandText = "DELETE FROM \"Vehicle\" WHERE \"Id\" = @id";
+                    await cmd.ExecuteNonQueryAsync();
+                }
             }
         }
 
 
 
+        private void AddWithParametersPagingSortingFiltering(NpgsqlCommand cmd, Filtering filtering, Paging paging, Sorting sorting)
+        {
+            cmd.Parameters.AddWithValue("@vehicleType", filtering.VehicleType);
+            cmd.Parameters.AddWithValue("@vehicleBrand", filtering.VehicleBrand);
+            cmd.Parameters.AddWithValue("@mileageMin", filtering.MileageMin);
+            cmd.Parameters.AddWithValue("@mileageMax", filtering.MileageMax);
 
+            cmd.Parameters.AddWithValue("@pageNumber", paging.PageNumber);
+            cmd.Parameters.AddWithValue("@pageSize", paging.PageSize);
+
+            cmd.Parameters.AddWithValue("@orderBy", sorting.OrderBy);
+            cmd.Parameters.AddWithValue("@sortOrder", sorting.SortOrder);
+        }
         private void AddVehicleParameters(NpgsqlCommand cmd, IVehicle vehicle)
         {
             cmd.Parameters.AddWithValue("@type", vehicle.VehicleType);
@@ -207,37 +247,69 @@ namespace WebProject.Data
 
         private IVehicle MapVehicleFromReader(NpgsqlDataReader reader)
         {
-            IVehicle vehicle = new Vehicle()
+            return new Vehicle()
             {
-                Id = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty,
+                Id = reader.GetGuid(reader.GetOrdinal("Id")),
                 VehicleType = Convert.ToString(reader["VehicleType"]),
                 VehicleBrand = Convert.ToString(reader["VehicleBrand"]),
                 YearOfProduction = Convert.ToInt32(reader["YearOfProduction"]),
                 TopSpeed = Convert.ToInt32(reader["TopSpeed"]),
                 VehicleMileage = Convert.ToInt32(reader["VehicleMileage"]),
                 VehicleOwner = Convert.ToString(reader["VehicleOwner"]),
-                VehicleServiceHistory = reader["ServiceDate"] != DBNull.Value ? new List<IVehicleServiceHistory>
-                {
-                  new VehicleServiceHistory()
-                  {
-                      Id = (Guid)reader[8]
-                  }
-                } : null,
+                VehicleServiceHistory = new List<IVehicleServiceHistory>(),
             };
-
-            return vehicle;
         }
 
         private IVehicleServiceHistory MapVehicleServiceHistoryFromReader(NpgsqlDataReader reader)
         {
             return new VehicleServiceHistory
             {
-                Id = (Guid)reader[7],
-                VehicleId = (Guid)reader["VehicleId"],
+                Id = reader.GetGuid(7),
+                VehicleId = reader.GetGuid(reader.GetOrdinal("VehicleId")),
                 ServiceDate = Convert.ToDateTime(reader["ServiceDate"]).Date,
                 ServiceDescription = Convert.ToString(reader["ServiceDescription"]),
                 ServiceCost = Convert.ToDecimal(reader["ServiceCost"]),
             };
         }
+
+        private string Query(NpgsqlCommand cmd, Filtering filtering, Paging paging, Sorting sorting)
+        {
+            AddWithParametersPagingSortingFiltering(cmd, filtering, paging, sorting);
+
+            var sqlQuery = new StringBuilder("SELECT v.*, h.* FROM \"Vehicle\" v LEFT JOIN \"VehicleServiceHistory\" h ON v.\"Id\" = h.\"VehicleId\" WHERE 1 = 1");
+
+            if (!string.IsNullOrEmpty(filtering.VehicleType))
+            {
+                sqlQuery.Append(" AND v.\"VehicleType\" = @vehicleType");
+            }
+
+            if (!string.IsNullOrEmpty(filtering.VehicleBrand))
+            {
+                sqlQuery.Append(" AND v.\"VehicleBrand\" = @vehicleBrand");
+            }
+
+            if (filtering.MileageMin > 0 && filtering.MileageMax > 0)
+            {
+                sqlQuery.Append(" AND v.\"VehicleMileage\" BETWEEN @mileageMin AND @mileageMax");
+            }
+            else if (filtering.MileageMin > 0 || filtering.MileageMax > 0)
+            {
+                if (filtering.MileageMin > 0 && filtering.MileageMax == 0)
+                {
+                    sqlQuery.Append(" AND v.\"VehicleMileage\" >= @mileageMin");
+                }
+                else if (filtering.MileageMin == 0 && filtering.MileageMax > 0)
+                {
+                    sqlQuery.Append(" AND v.\"VehicleMileage\" <= @mileageMax");
+                }
+            }
+
+            sqlQuery.Append($" ORDER BY v.\"{sorting.OrderBy}\" {(sorting.SortOrder.ToUpper() == "DESC" ? "DESC" : "ASC")}");
+
+            sqlQuery.Append($" OFFSET {(paging.PageNumber - 1) * paging.PageSize} LIMIT {paging.PageSize}");
+
+            return sqlQuery.ToString();
+        }
+
     }
 }

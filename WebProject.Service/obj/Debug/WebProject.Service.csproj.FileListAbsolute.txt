@@ -47,3 +47,5 @@ C:\Users\ivana\Desktop\New folder (2)\WebProject.Service\bin\Debug\Serilog.xml
 C:\Users\ivana\Desktop\New folder (2)\WebProject.Service\bin\Debug\WebProject.Repository.RepositoryCommon.pdb
 C:\Users\ivana\Desktop\New folder (2)\WebProject.Service\bin\Debug\WebProject.Model.ModelCommon.dll
 C:\Users\ivana\Desktop\New folder (2)\WebProject.Service\bin\Debug\WebProject.Model.ModelCommon.pdb
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Service\bin\Debug\WebProject.Common.dll
+C:\Users\ivana\Desktop\New folder (2)\WebProject.Service\bin\Debug\WebProject.Common.pdb

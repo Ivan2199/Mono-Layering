@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using WebProject.Model.ModelCommon;
+using WebProject.Model.Common;
 
 namespace WebProject.Model
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WebProject.Model.ModelCommon
+namespace WebProject.Model.Common
 {
     public interface IVehicleServiceHistory
     {

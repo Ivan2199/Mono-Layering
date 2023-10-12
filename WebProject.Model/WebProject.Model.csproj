@@ -46,9 +46,9 @@
     <Compile Include="VehicleServiceHistory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WebProject.Model.ModelCommon\WebProject.Model.ModelCommon.csproj">
+    <ProjectReference Include="..\WebProject.Model.ModelCommon\WebProject.Model.Common.csproj">
       <Project>{c26e30e8-3be3-4a3a-a202-96b03af967c1}</Project>
-      <Name>WebProject.Model.ModelCommon</Name>
+      <Name>WebProject.Model.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

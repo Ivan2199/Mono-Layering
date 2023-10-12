@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using WebProject.Data;
 using WebProject.Model;
 using System.Threading.Tasks;
-using WebProject.Service.ServiceCommon;
-using WebProject.Repository.RepositoryCommon;
-using WebProject.Model.ModelCommon;
+using WebProject.Service.Common;
+using WebProject.Repository.Common;
+using WebProject.Model.Common;
+using WebProject.Common;
 
 namespace WebProject.Service
 {
@@ -17,32 +18,31 @@ namespace WebProject.Service
         public VehicleService(IVehicleRepository dataAccess)
         {
             _dataAccess = dataAccess;
-            _dataAccess.InitializeDatabase();
         }
 
-        public async Task<List<IVehicle>> GetVehicles(string vehicleType = null)
+        public async Task<List<IVehicle>> GetVehiclesAsync(Paging paging, Sorting sorting, Filtering filtering)
         {
-            return await _dataAccess.GetVehicles(vehicleType);
+            return await _dataAccess.GetVehiclesAsync(paging, sorting, filtering);
         }
 
-        public async Task<IVehicle> GetVehicleById(Guid id)
+        public async Task<IVehicle> GetVehicleByIdAsync(Guid id)
         {
-             return await _dataAccess.GetVehicleById(id);
+             return await _dataAccess.GetVehicleByIdAsync(id);
         }
 
-        public async Task AddVehicle(Vehicle vehicle)
+        public async Task AddVehicleAsync(Vehicle vehicle)
         {
-            await _dataAccess.AddVehicle(vehicle);
+            await _dataAccess.AddVehicleAsync(vehicle);
         }
 
-        public async Task UpdateVehicle(Guid id, Vehicle updatedVehicle)
+        public async Task UpdateVehicleAsync(Guid id, Vehicle updatedVehicle)
         {
-            await _dataAccess.UpdateVehicle(id, updatedVehicle);
+            await _dataAccess.UpdateVehicleAsync(id, updatedVehicle);
         }
 
-        public async Task DeleteVehicle(Guid id)
+        public async Task DeleteVehicleAsync(Guid id)
         {
-             await _dataAccess.DeleteVehicle(id);
+             await _dataAccess.DeleteVehicleAsync(id);
         }
     }
 }

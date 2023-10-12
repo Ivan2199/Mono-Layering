@@ -5,16 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using WebProject.Service;
 using WebProject.Model;
-using WebProject.Model.ModelCommon;
+using WebProject.Model.Common;
 
-namespace WebProject.Service.ServiceCommon
+namespace WebProject.Service.Common
 {
     public interface IVehicleServiceHistoryService
     {
-        Task<List<IVehicleServiceHistory>> GetVehicleHistoryServices();
-        Task<List<IVehicleServiceHistory>> GetVehicleServiceHistoryById(Guid id);
-        Task AddVehicleServiceHistory(VehicleServiceHistory vehicleServiceHistory);
-        Task UpdateVehicleServiceHistory(Guid id, VehicleServiceHistory vehicleServiceHistory);
-        Task DeleteVehicleServiceHistory(Guid id);
+        Task<List<IVehicleServiceHistory>> GetVehicleHistoryServicesAsync();
+        Task<List<IVehicleServiceHistory>> GetVehicleServiceHistoryByIdAsync(Guid id);
+        Task AddVehicleServiceHistoryAsync(VehicleServiceHistory vehicleServiceHistory);
+        Task UpdateVehicleServiceHistoryAsync(Guid id, VehicleServiceHistory vehicleServiceHistory);
+        Task DeleteVehicleServiceHistoryAsync(Guid id);
     }
 }

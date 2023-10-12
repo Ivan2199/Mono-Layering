@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using WebProject.Model.ModelCommon;
+using WebProject.Model.Common;
 
 namespace WebProject.Model
 {

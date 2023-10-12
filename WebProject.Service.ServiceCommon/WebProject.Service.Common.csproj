@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D87FAE9E-5FDB-46C0-9B8D-AE2A17C772E5}</ProjectGuid>
+    <ProjectGuid>{6B408A2F-4B86-4020-8BD3-AC61E2C0E02D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WebProject.Repository.RepositoryCommon</RootNamespace>
-    <AssemblyName>WebProject.Repository.RepositoryCommon</AssemblyName>
+    <RootNamespace>WebProject.Service.ServiceCommon</RootNamespace>
+    <AssemblyName>WebProject.Service.ServiceCommon</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -41,14 +41,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IVehicleRepository.cs" />
-    <Compile Include="IVehicleServiceHistoryRepository.cs" />
+    <Compile Include="IVehicleService.cs" />
+    <Compile Include="IVehicleServiceHistoryService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WebProject.Model.ModelCommon\WebProject.Model.ModelCommon.csproj">
+    <ProjectReference Include="..\WebProject.Common\WebProject.Common.csproj">
+      <Project>{87E86DEF-4D45-41A7-B2FC-B9625581B2B0}</Project>
+      <Name>WebProject.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebProject.Model.ModelCommon\WebProject.Model.Common.csproj">
       <Project>{C26E30E8-3BE3-4A3A-A202-96B03AF967C1}</Project>
-      <Name>WebProject.Model.ModelCommon</Name>
+      <Name>WebProject.Model.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebProject.Model\WebProject.Model.csproj">
       <Project>{38140503-fef4-4802-b54d-7993683b458e}</Project>
