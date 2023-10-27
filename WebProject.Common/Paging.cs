@@ -8,12 +8,17 @@ namespace WebProject.Common
 {
     public class Paging
     {
+        public int SizeOfList { get; set; }
         public int PageNumber { get; set; }   
         public int PageSize { get; set; }
 
         public Paging(int pageNumber, int pageSize) { 
             PageNumber = pageNumber;
             PageSize = pageSize;
+        }
+
+        public Paging()
+        {
         }
     }
 }

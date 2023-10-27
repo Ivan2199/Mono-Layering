@@ -26,26 +26,25 @@ namespace WebProject.Controllers
             _vehicleService = vehicleService;
         }
 
-        [HttpGet]
-        public async Task<HttpResponseMessage> GetAsync(int pageNumber = 1, int pageSize= 10, string orderBy = "YearOfProduction", string sortOrder = "ASC",string vehicleType = "", string vehicleBrand = "", int mileageMin = 0, int mileageMax = 0)
+        public async Task<HttpResponseMessage> GetAsync(int pageNumber = 1, int pageSize = 10, string orderBy = "YearOfProduction", string sortOrder = "ASC", string vehicleType = "", string vehicleBrand = "", int mileageMin = 0, int mileageMax = 0)
         {
             try
             {
                 Paging paging = new Paging(pageNumber, pageSize);
                 Sorting sorting = new Sorting(orderBy, sortOrder);
                 Filtering filtering = new Filtering(vehicleType, vehicleBrand, mileageMin, mileageMax);
-                var vehicles = await _vehicleService.GetVehiclesAsync(paging, sorting, filtering);
+
+                var (vehicles, pagingInfo) = await _vehicleService.GetVehiclesAsync(paging, sorting, filtering);
 
                 if (vehicles.Count == 0)
                 {
                     return Request.CreateResponse(HttpStatusCode.NoContent, "List is empty");
                 }
-                
-                List<VehicleView> vehiclesView = new List<VehicleView>();
-                foreach (var vehicle in vehicles)
-                {
-                    vehiclesView.Add(MapVehicleView(vehicle));
-                }
+
+                List<VehicleView> vehiclesView = vehicles.Select(vehicle => MapVehicleView(vehicle)).ToList();
+                vehiclesView.ForEach(v => v.pageNumber = pagingInfo.PageNumber);
+                vehiclesView.ForEach(v => v.pageSize = pagingInfo.PageSize);
+                vehiclesView.ForEach(v => v.totalSize = pagingInfo.SizeOfList);
 
                 return Request.CreateResponse(HttpStatusCode.OK, vehiclesView);
             }
@@ -160,6 +159,7 @@ namespace WebProject.Controllers
         {
             return new VehicleView
             {
+                Id=vehicle.Id,
                 VehicleType = vehicle.VehicleType,
                 VehicleBrand = vehicle.VehicleBrand,
                 TopSpeed = vehicle.TopSpeed,

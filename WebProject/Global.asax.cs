@@ -1,8 +1,6 @@
 ﻿using Autofac;
 using Autofac.Integration.WebApi;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -15,6 +13,8 @@ using WebProject.Data;
 using WebProject.Service;
 using WebProject.Service.Common;
 using WebProject.Repository;
+using Newtonsoft.Json.Serialization;
+using ServiceStack.Text;
 
 namespace WebProject
 {
@@ -22,6 +22,9 @@ namespace WebProject
     {
         protected void Application_Start()
         {
+            GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
+            GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
@@ -29,7 +32,6 @@ namespace WebProject
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             InitializeDatabase();
             ContainerConfig.Configure();
-
         }
 
         private void InitializeDatabase()

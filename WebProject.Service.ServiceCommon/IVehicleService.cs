@@ -12,7 +12,7 @@ namespace WebProject.Service.Common
 {
     public interface IVehicleService
     {
-        Task<List<IVehicle>> GetVehiclesAsync(Paging paging, Sorting sorting, Filtering filtering);
+        Task<(List<IVehicle>, Paging)> GetVehiclesAsync(Paging paging, Sorting sorting, Filtering filtering);
 
         Task<IVehicle> GetVehicleByIdAsync(Guid id);
 

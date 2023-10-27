@@ -20,10 +20,12 @@ namespace WebProject.Service
             _dataAccess = dataAccess;
         }
 
-        public async Task<List<IVehicle>> GetVehiclesAsync(Paging paging, Sorting sorting, Filtering filtering)
+        public async Task<(List<IVehicle>, Paging)> GetVehiclesAsync(Paging paging, Sorting sorting, Filtering filtering)
         {
-            return await _dataAccess.GetVehiclesAsync(paging, sorting, filtering);
+            var result = await _dataAccess.GetVehiclesAsync(paging, sorting, filtering);
+            return result;
         }
+
 
         public async Task<IVehicle> GetVehicleByIdAsync(Guid id)
         {

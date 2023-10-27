@@ -45,18 +45,30 @@ namespace WebProject.Data
             }
         }
 
-        public async Task<List<IVehicle>> GetVehiclesAsync(Paging paging, Sorting sorting, Filtering filtering)
+        public async Task<(List<IVehicle>, Paging)> GetVehiclesAsync(Paging paging, Sorting sorting, Filtering filtering)
         {
             var vehiclesDict = new Dictionary<Guid, IVehicle>();
 
             using (var con = new NpgsqlConnection(_connectionString))
             {
                 con.Open();
+
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = con;
-                    
 
+                    // Create a separate SQL query to count the total records.
+                    string countQuery = QueryCount(cmd, filtering);
+
+                    // Execute the count query.
+                    cmd.CommandText = countQuery;
+                    object countResult = await cmd.ExecuteScalarAsync();
+                    int totalCount = Convert.ToInt32(countResult);
+
+                    // Update the paging.SizeOfList with the total count.
+                    paging.SizeOfList = totalCount;
+
+                    // Continue with the main query.
                     cmd.CommandText = Query(cmd, filtering, paging, sorting);
 
                     using (var reader = await cmd.ExecuteReaderAsync())
@@ -82,7 +94,10 @@ namespace WebProject.Data
                     }
                 }
             }
-            return vehiclesDict.Values.ToList();
+
+            var vehicleList = vehiclesDict.Values.ToList();
+
+            return (vehicleList, paging);
         }
 
 
@@ -247,7 +262,7 @@ namespace WebProject.Data
 
         private IVehicle MapVehicleFromReader(NpgsqlDataReader reader)
         {
-            return new Vehicle()
+            return new Vehicle
             {
                 Id = reader.GetGuid(reader.GetOrdinal("Id")),
                 VehicleType = Convert.ToString(reader["VehicleType"]),
@@ -274,9 +289,46 @@ namespace WebProject.Data
 
         private string Query(NpgsqlCommand cmd, Filtering filtering, Paging paging, Sorting sorting)
         {
-            AddWithParametersPagingSortingFiltering(cmd, filtering, paging, sorting);
+            string countSubquery = "SELECT COUNT(*) FROM \"Vehicle\" v LEFT JOIN \"VehicleServiceHistory\" h ON v.\"Id\" = h.\"VehicleId\" WHERE 1 = 1";
 
-            var sqlQuery = new StringBuilder("SELECT v.*, h.* FROM \"Vehicle\" v LEFT JOIN \"VehicleServiceHistory\" h ON v.\"Id\" = h.\"VehicleId\" WHERE 1 = 1");
+            if (!string.IsNullOrEmpty(filtering.VehicleType))
+            {
+                countSubquery += " AND v.\"VehicleType\" = @vehicleType";
+            }
+
+            if (!string.IsNullOrEmpty(filtering.VehicleBrand))
+            {
+                countSubquery += " AND v.\"VehicleBrand\" = @vehicleBrand";
+            }
+
+            if (filtering.MileageMin > 0 && filtering.MileageMax > 0)
+            {
+                countSubquery += " AND v.\"VehicleMileage\" BETWEEN @mileageMin AND @mileageMax";
+            }
+            else if (filtering.MileageMin > 0 || filtering.MileageMax > 0)
+            {
+                if (filtering.MileageMin > 0 && filtering.MileageMax == 0)
+                {
+                    countSubquery += " AND v.\"VehicleMileage\" >= @mileageMin";
+                }
+                else if (filtering.MileageMin == 0 && filtering.MileageMax > 0)
+        {
+                    countSubquery += " AND v.\"VehicleMileage\" <= @mileageMax";
+                }
+            }
+
+            var sqlQuery = new StringBuilder($"SELECT v.*, h.*, ({countSubquery}) AS TotalCount FROM \"Vehicle\" v LEFT JOIN \"VehicleServiceHistory\" h ON v.\"Id\" = h.\"VehicleId\" WHERE 1 = 1");
+
+            sqlQuery.Append($" ORDER BY v.\"{sorting.OrderBy}\" {(sorting.SortOrder.ToUpper() == "DESC" ? "DESC" : "ASC")}");
+
+            sqlQuery.Append($" OFFSET {(paging.PageNumber - 1) * paging.PageSize} LIMIT {paging.PageSize}");
+
+            return sqlQuery.ToString();
+        }
+
+        private string QueryCount(NpgsqlCommand cmd, Filtering filtering)
+        {
+            var sqlQuery = new StringBuilder("SELECT COUNT(*) FROM \"Vehicle\" v WHERE 1 = 1");
 
             if (!string.IsNullOrEmpty(filtering.VehicleType))
             {
@@ -303,10 +355,6 @@ namespace WebProject.Data
                     sqlQuery.Append(" AND v.\"VehicleMileage\" <= @mileageMax");
                 }
             }
-
-            sqlQuery.Append($" ORDER BY v.\"{sorting.OrderBy}\" {(sorting.SortOrder.ToUpper() == "DESC" ? "DESC" : "ASC")}");
-
-            sqlQuery.Append($" OFFSET {(paging.PageNumber - 1) * paging.PageSize} LIMIT {paging.PageSize}");
 
             return sqlQuery.ToString();
         }
